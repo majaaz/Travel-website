@@ -551,6 +551,25 @@
     background: #00e5ff;
     transition: width 0.4s ease;
   }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    #navbar { padding: 1rem 1.5rem; flex-wrap: wrap; }
+    .nav-links { display: none; }
+    .nav-actions { gap: 0.5rem; }
+    #hero-overlay { bottom: 20%; padding: 1rem; }
+    #hero-overlay h1 { font-size: 2rem !important; line-height: 1.2; }
+    #selection-panel { width: 90%; margin: 0 5%; }
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 14px; }
+    #navbar { padding: 0.75rem 1rem; }
+    #hero-overlay h1 { font-size: 1.5rem !important; }
+    #hero-overlay p { font-size: 0.875rem; }
+    #selection-panel { width: 95%; }
+    .sp-label { font-size: 0.5rem; }
+  }
 </style>
 </head>
 <body>
@@ -1438,6 +1457,28 @@
   transition: all 0.2s;
 }
 .login-btn-signout:hover { border-color: #c3f5ff; color: #c3f5ff; }
+
+/* Mobile Overlay Responsiveness */
+@media (max-width: 768px) {
+  #search-overlay { padding-top: 5vh; }
+  #search-box { max-width: 95% !important; padding: 1rem !important; }
+  #search-input { font-size: 1rem !important; }
+  #destinations-overlay { padding: 3rem 1rem 2rem !important; }
+  .dest-cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; gap: 0.75rem !important; }
+  .dest-card { padding: 0.75rem !important; }
+  #login-box { max-width: 90% !important; padding: 2rem 1.5rem !important; }
+  .login-field { padding: 0.75rem !important; font-size: 16px !important; }
+}
+
+@media (max-width: 640px) {
+  #search-box { width: 98% !important; }
+  #search-input { font-size: 14px !important; padding: 0.75rem !important; }
+  .dest-overlay-title { font-size: 0.5rem !important; margin-bottom: 1.5rem !important; }
+  .dest-cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem !important; }
+  .dest-card { padding: 0.5rem !important; }
+  .dest-card-name { font-size: 0.7rem !important; }
+  #login-box { width: 95% !important; }
+}
 </style>
 
 <script>
