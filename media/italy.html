@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#101419",
+              "outline": "#849396",
+              "secondary-fixed-dim": "#fabd00",
+              "error-container": "#93000a",
+              "on-tertiary-fixed-variant": "#594400",
+              "on-error": "#690005",
+              "on-primary": "#00363d",
+              "secondary": "#ffdf9e",
+              "tertiary-fixed-dim": "#f3bf26",
+              "inverse-primary": "#006875",
+              "surface-container-high": "#262a31",
+              "surface": "#101419",
+              "on-background": "#e0e2eb",
+              "tertiary": "#ffeac0",
+              "on-tertiary-fixed": "#251a00",
+              "on-secondary-fixed": "#261a00",
+              "secondary-container": "#fabd00",
+              "error": "#ffb4ab",
+              "on-surface-variant": "#bac9cc",
+              "background": "#101419",
+              "secondary-fixed": "#ffdf9e",
+              "primary-container": "#00e5ff",
+              "outline-variant": "#3b494c",
+              "on-surface": "#e0e2eb",
+              "surface-bright": "#363940",
+              "inverse-surface": "#e0e2eb",
+              "inverse-on-surface": "#2d3137",
+              "surface-container": "#1c2026",
+              "on-primary-fixed": "#001f24",
+              "on-secondary": "#3f2e00",
+              "primary": "#c3f5ff",
+              "on-tertiary": "#3e2e00",
+              "primary-fixed": "#9cf0ff",
+              "surface-container-highest": "#31353c",
+              "on-secondary-container": "#6a4e00",
+              "surface-container-lowest": "#0b0e14",
+              "primary-fixed-dim": "#00daf3",
+              "on-tertiary-container": "#6f5500",
+              "on-primary-container": "#00626e",
+              "surface-container-low": "#181c22",
+              "surface-tint": "#00daf3",
+              "tertiary-fixed": "#ffdf96",
+              "on-secondary-fixed-variant": "#5b4300",
+              "on-error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004f58",
+              "tertiary-container": "#fec931",
+              "surface-variant": "#31353c"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(49, 53, 60, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(132, 147, 150, 0.15);
+        }
+        .asymmetric-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-transparent dark:bg-transparent backdrop-blur-md">
+<div class="text-2xl font-bold tracking-[0.2em] text-white dark:text-white hover:text-cyan-400 transition-colors font-headline">
+            CELESTIAL
+        </div>
+<div class="hidden md:flex gap-12 items-center font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm">
+<a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="#">Explore</a>
+<a class="text-cyan-400 border-b border-cyan-400 pb-1 hover:text-cyan-300 transition-all duration-300" href="#">Destinations</a>
+<a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="#">My Trips</a>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="bg-white/5 border-none text-xs tracking-widest px-10 py-2 focus:ring-1 focus:ring-cyan-400 w-64 rounded-none" placeholder="SEARCH COORDINATES" type="text"/>
+</div>
+<button class="text-white hover:text-cyan-400 transition-colors active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
+<!-- Breadcrumb / Back Navigation -->
+<div class="mb-12 flex items-center gap-4">
+<a class="group flex items-center gap-2 text-xs font-label tracking-[0.2em] uppercase text-outline hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to Globe
+            </a>
+<span class="text-outline/30">/</span>
+<span class="text-xs font-label tracking-[0.2em] uppercase text-primary">Europe</span>
+</div>
+<!-- Cinematic Header -->
+<header class="mb-20 relative">
+<div class="absolute -left-20 -top-20 w-96 h-96 bg-primary-container/5 rounded-full blur-[120px]"></div>
+<h1 class="font-headline text-6xl md:text-8xl lg:text-[10rem] font-bold tracking-[0.15em] uppercase text-on-surface leading-none opacity-90">
+                ITALY
+            </h1>
+<div class="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-8">
+<p class="max-w-xl text-on-surface-variant font-body leading-relaxed text-lg">
+                    Discover a land where history, art, and landscapes converge in a symphony of timeless beauty. From the ruins of an empire to the azure waters of the Mediterranean.
+                </p>
+<div class="flex gap-12 border-l border-outline-variant/20 pl-8">
+<div>
+<span class="block text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-1">Region</span>
+<span class="text-xl font-headline tracking-widest text-white">MEDITERRANEAN</span>
+</div>
+<div>
+<span class="block text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-1">Coordinates</span>
+<span class="text-xl font-headline tracking-widest text-white">41.8719° N</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Destination Cards - Asymmetric Layout -->
+<section class="asymmetric-grid">
+<!-- Large Feature: Colosseum -->
+<article class="col-span-12 lg:col-span-8 group relative h-[600px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The ancient Colosseum in Rome at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhF_2ZR8F4bGDFsoESHlH_Zl8l65tefCjZ2ioIS2EUyPQrP8BCwvbVTiHdLOaTUlO2i_cdjz10PwBTkkjNtKzuRga7DUGQoDAY5svl8_kc7WjQRa40NPm9o-SsSG2klJ9xL0R-SNhYsbE4Mo2zkfa2LDJskCfvnS1jJB8wPiwh0C3Ylh8Qwg6sN2Z6QNPjw6-OzplZEXYXbz7bXQCT5rzQLjwAv_Dd5Ka8dVDW_lJQ9wj36eKdyTjjfIn70M7jFsb6KS2IT0JSX8ws"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 glass-card m-6">
+<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-4 block">Rome, Italy</span>
+<h2 class="font-headline text-4xl font-bold tracking-wider text-white mb-4">THE COLOSSEUM</h2>
+<p class="text-on-surface-variant mb-6 leading-relaxed">The majestic Flavian Amphitheatre stands as a testament to Imperial Rome's architectural genius and complex history.</p>
+<button class="px-8 py-3 bg-primary-container text-on-primary font-label text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all rounded-none">
+                        View Details
+                    </button>
+</div>
+</article>
+<!-- Side Card: Florence -->
+<article class="col-span-12 lg:col-span-4 group relative h-[600px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The Florence Cathedral Duomo skyline" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzT6rBTMI3eCPukTtDkHRNeG5mXD8e6iS_2hMREhL1NXzZGJxpV9cetQcy4nc60WZizjikpNoSoyi9qohxKwcknSHRN8TEuEaoQTnQK4oM3HiEH36mFDhy8R_DD9yS3XPDzw64bFOAbzn-qbJ_O0FNAsdUBDoj0J4i45vEc-YAGqOJO8Bzfje_NRZ6LPJbPC1APDzJ4UsKkqreYZlT7fEG1HgfzCmvYpsYBVVTOHRU4iKZOeR--aaEI8zGf1fqz5z5roE4k3T-ADap"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">Florence</span>
+<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-4">FLORENCE CATHEDRAL</h2>
+<button class="group/btn flex items-center gap-4 text-[0.6875rem] font-label tracking-[0.2em] uppercase text-white">
+<span>View Details</span>
+<span class="material-symbols-outlined text-sm group-hover/btn:translate-x-2 transition-transform">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Grid Item: Amalfi Coast -->
+<article class="col-span-12 md:col-span-6 lg:col-span-4 group relative h-[450px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Colorful houses on the Amalfi Coast cliffs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4_AKxXxVnPokxyZsEyQp1-9b0DwMiJY2e9fAt1eR02H4ujgnvakuPjA96uH0m6-avBVmEPpe3TW6hdh9QAMlKD_9p0bIpm8gKsLBrZPJOzKfsKhsKQ-_4F0JnEOuw_RgUJUJ3NXCF10FyIXDSW0o5IUvQgzAWIkzsmtrBV3kRhwO6OUlKqDowYJnxZJwVKGaNB9Eo8W4U9YGAU9Zj2WZDdHBW14qlnOrOR-KgHtGyjosbz6KNqeD-d_9RG1Uj6j36OCYzWNUBfla3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">Positano</span>
+<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-2">AMALFI COAST</h2>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4">Dramatic cliffs and turquoise waters meet pastel-colored villages.</p>
+<button class="w-full py-3 border border-primary/20 hover:border-primary transition-colors font-label text-[0.625rem] tracking-[0.2em] uppercase text-white">
+                        View Expedition
+                    </button>
+</div>
+</article>
+<!-- Grid Item: Venice -->
+<article class="col-span-12 md:col-span-6 lg:col-span-4 group relative h-[450px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Venice canals and gondolas at night" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCANGiSXlb30waLTvgd4ZcI_1l31NYb3GAIGQ47FzjMeskxcjuDADAEbobKwekbKSWIKmp3yhnVCoPWnRfre7lU7y0bhmErLivvJ-n5Mp7itqHRodNtfaOenknvmqUmQDiZ2OGBuczT7JNkltzHj8rpx_4owyYWbkEzkL_lYcJGTDi7wcs0ISrSH_P461x-Qby4wHMYEM8z7n6UWIVr2B1EDk5uo02cc8OQV5ovj5VazJgyT8ADSIKsVUh3wy_Hmo_hI9M7y_pv_wdy"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">Veneto</span>
+<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-2">CANALS OF VENICE</h2>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4">A labyrinth of waterways and bridges in the world's most romantic city.</p>
+<button class="w-full py-3 border border-primary/20 hover:border-primary transition-colors font-label text-[0.625rem] tracking-[0.2em] uppercase text-white">
+                        View Expedition
+                    </button>
+</div>
+</article>
+<!-- Grid Item: Dolomites -->
+<article class="col-span-12 md:col-span-12 lg:col-span-4 group relative h-[450px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Jagged peaks of the Italian Dolomites" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBvRQkDsowS0JE84Jm1u9GRSNBUnwYULITFRdCqoaDgmfb9T-lFAMz2ieO5v0SycAiGgtEC5e0Fz6FZ-bz9CykTX1TxJ50ZGZjYld0-ieapRrhMdmg9ii3x9vEKSSM5T7ImKQ7fGwPVqB3DjO5SqhMEdnpJ0xYX4zigmbJ76ltq_4WUMxOz848QOSYq-oLgGHP9Q9hM4qixEF0aUYQzFlKc3_nkeCTUW3G33-6f5igz6Vwn4ydklsmL8je53kXMM1tAu3NwyfueH7E"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">South Tyrol</span>
+<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-2">THE DOLOMITES</h2>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4">Pristine alpine landscapes and jagged peaks that touch the heavens.</p>
+<button class="w-full py-3 border border-primary/20 hover:border-primary transition-colors font-label text-[0.625rem] tracking-[0.2em] uppercase text-white">
+                        View Expedition
+                    </button>
+</div>
+</article>
+</section>
+<!-- Technical HUD Section -->
+<section class="mt-32 border-t border-outline-variant/10 pt-16 grid grid-cols-1 md:grid-cols-3 gap-12">
+<div>
+<span class="font-label text-[0.6875rem] tracking-[0.3em] uppercase text-primary block mb-6">Topography Scan</span>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+<span>Terrain Variance</span>
+<span class="text-white">High Alpine / Coastal</span>
+</div>
+<div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+<span>Climate Index</span>
+<span class="text-white">Temperate Csa/Csb</span>
+</div>
+<div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+<span>Bio-Diversity</span>
+<span class="text-white">Mediterranean Scrub</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-2">
+<span class="font-label text-[0.6875rem] tracking-[0.3em] uppercase text-primary block mb-6">Regional Cartography</span>
+<div class="w-full h-48 bg-surface-container-low relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, #3b494c 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="text-[0.625rem] tracking-[0.5em] uppercase text-outline">Digital Surface Model Processing...</div>
+<!-- Mock Map Graphic -->
+<div class="absolute inset-0 flex items-center justify-center">
+<svg class="w-full h-full opacity-10" viewbox="0 0 800 200">
+<path d="M0,100 Q150,50 300,100 T600,100 T900,100" fill="none" stroke="#00e5ff" stroke-width="1"></path>
+<path d="M0,120 Q200,80 400,120 T800,120" fill="none" stroke="#00e5ff" stroke-width="0.5"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Persistent Hidden Element for Reference) -->
+<aside class="fixed right-0 top-0 h-full z-40 flex flex-col p-8 bg-slate-900/40 dark:bg-[#181c22]/60 backdrop-blur-xl border-l border-white/10 shadow-[0_0_40px_rgba(0,229,255,0.06)] translate-x-full lg:translate-x-0 hidden lg:flex w-80">
+<div class="mb-12">
+<h3 class="text-lg font-bold text-white font-headline">Voyage Planner</h3>
+<p class="text-slate-400 text-xs tracking-widest uppercase">Coordinates Saved</p>
+</div>
+<nav class="flex-1 font-['Inter'] text-sm tracking-wide">
+<div class="space-y-2">
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+                    Planner
+                </a>
+<a class="text-cyan-400 font-bold flex items-center gap-4 py-3 border-r-2 border-cyan-400 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                    Favorites
+                </a>
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                    Recent
+                </a>
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</div>
+</nav>
+<button class="mt-auto py-4 bg-primary-container text-on-primary font-bold tracking-[0.2em] uppercase text-xs rounded-none active:scale-95 transition-all">
+            Book Expedition
+        </button>
+</aside>
+<!-- Footer -->
+<footer class="w-full py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-[#0b0e14] dark:bg-[#0b0e14]">
+<div class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]">
+            © 2024 Celestial Cartographer. Beyond the Horizon.
+        </div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Privacy Policy</a>
+<a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Terms of Service</a>
+<a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Galactic Coordinates</a>
+<a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Contact Support</a>
+</div>
+</footer>
+</body></html>

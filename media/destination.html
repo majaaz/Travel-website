@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Destination | Celestial Cartographer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "surface-dim": "#101419",
+                    "outline": "#849396",
+                    "secondary-fixed-dim": "#fabd00",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#594400",
+                    "on-error": "#690005",
+                    "on-primary": "#00363d",
+                    "secondary": "#ffdf9e",
+                    "tertiary-fixed-dim": "#f3bf26",
+                    "inverse-primary": "#006875",
+                    "surface-container-high": "#262a31",
+                    "surface": "#101419",
+                    "on-background": "#e0e2eb",
+                    "tertiary": "#ffeac0",
+                    "on-tertiary-fixed": "#251a00",
+                    "on-secondary-fixed": "#261a00",
+                    "secondary-container": "#fabd00",
+                    "error": "#ffb4ab",
+                    "on-surface-variant": "#bac9cc",
+                    "background": "#101419",
+                    "secondary-fixed": "#ffdf9e",
+                    "primary-container": "#00e5ff",
+                    "outline-variant": "#3b494c",
+                    "on-surface": "#e0e2eb",
+                    "surface-bright": "#363940",
+                    "inverse-surface": "#e0e2eb",
+                    "inverse-on-surface": "#2d3137",
+                    "surface-container": "#1c2026",
+                    "on-primary-fixed": "#001f24",
+                    "on-secondary": "#3f2e00",
+                    "primary": "#c3f5ff",
+                    "on-tertiary": "#3e2e00",
+                    "primary-fixed": "#9cf0ff",
+                    "surface-container-highest": "#31353c",
+                    "on-secondary-container": "#6a4e00",
+                    "surface-container-lowest": "#0b0e14",
+                    "primary-fixed-dim": "#00daf3",
+                    "on-tertiary-container": "#6f5500",
+                    "on-primary-container": "#00626e",
+                    "surface-container-low": "#181c22",
+                    "surface-tint": "#00daf3",
+                    "tertiary-fixed": "#ffdf96",
+                    "on-secondary-fixed-variant": "#5b4300",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#004f58",
+                    "tertiary-container": "#fec931",
+                    "surface-variant": "#31353c"
+                },
+                fontFamily: {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+                },
+                borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+            },
+        },
+    }
+</script>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-panel {
+        background: rgba(49, 53, 60, 0.4);
+        backdrop-filter: blur(16px);
+    }
+    .hero-gradient {
+        background: linear-gradient(to bottom, transparent 0%, #101419 100%);
+    }
+</style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-transparent dark:bg-transparent backdrop-blur-md">
+    <a href="index.html" class="text-2xl font-bold tracking-[0.2em] text-white dark:text-white hover:text-cyan-400 transition-colors font-headline">
+        CELESTIAL
+    </a>
+    <div class="hidden md:flex items-center gap-12 font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm">
+        <a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="index.html">Explore</a>
+        <a class="text-cyan-400 border-b border-cyan-400 pb-1 hover:text-cyan-300 transition-all duration-300" href="index.html">Destinations</a>
+        <a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="travelplanner.html">My Trips</a>
+    </div>
+    <div class="flex items-center gap-6">
+        <button id="btn-login" class="material-symbols-outlined text-cyan-400 cursor-pointer hover:scale-95 duration-200 ease-in-out bg-none border-none" onclick="openLoginModal()">account_circle</button>
+    </div>
+</nav>
+
+<!-- SideNavBar (Voyage Planner) - Persistent Drawer Style -->
+<aside class="fixed right-0 top-0 h-full z-40 flex flex-col p-8 bg-slate-900/40 dark:bg-[#181c22]/60 backdrop-blur-xl border-l border-white/10 w-80 shadow-[0_0_40px_rgba(0,229,255,0.06)] font-['Inter'] text-sm tracking-wide">
+    <div class="mb-12">
+        <h2 class="text-lg font-bold text-white">Voyage Planner</h2>
+        <p class="text-slate-500 text-xs uppercase tracking-widest mt-1">Coordinates Saved</p>
+    </div>
+    <nav class="flex-1 space-y-2">
+        <a class="text-cyan-400 font-bold flex items-center gap-4 py-3 border-r-2 border-cyan-400 hover:bg-white/5 transition-colors" href="#">
+            <span class="material-symbols-outlined">event_note</span>
+            Planner
+        </a>
+        <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+            <span class="material-symbols-outlined">star</span>
+            Favorites
+        </a>
+        <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+            <span class="material-symbols-outlined">history</span>
+            Recent
+        </a>
+        <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            Settings
+        </a>
+    </nav>
+    <div class="mt-auto pt-8 border-t border-white/5">
+        <a id="btn-book-expedition" href="travelplanner.html" class="block w-full bg-primary-container text-on-primary-container py-4 font-bold tracking-widest uppercase text-xs hover:brightness-110 transition-all text-center">
+            Book Expedition
+        </a>
+    </div>
+</aside>
+
+<main class="relative mr-80">
+
+    <!-- Hero Section -->
+    <section class="relative h-screen w-full overflow-hidden">
+        <img id="dest-hero-img" alt="Destination hero image" class="absolute inset-0 w-full h-full object-cover" src=""/>
+        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="absolute bottom-24 left-12 max-w-4xl">
+            <div class="flex items-center gap-4 mb-4">
+                <span id="dest-category" class="text-secondary font-label text-[0.6875rem] uppercase tracking-[0.2em] px-3 py-1 border border-secondary/20"></span>
+                <span id="dest-coordinates" class="text-primary font-label text-[0.6875rem] uppercase tracking-[0.2em]"></span>
+            </div>
+            <h1 id="dest-name" class="text-white font-headline text-[5rem] leading-[0.9] tracking-[0.1em] uppercase mb-6"></h1>
+            <p id="dest-description" class="text-on-surface-variant text-lg max-w-2xl leading-relaxed font-light"></p>
+        </div>
+    </section>
+
+    <!-- Breadcrumb -->
+    <div class="px-12 pt-8 flex items-center gap-4">
+        <a href="index.html" class="text-xs font-label tracking-[0.2em] uppercase text-outline hover:text-primary transition-colors">← Globe</a>
+        <span class="text-outline/30">/</span>
+        <a id="back-to-country" href="#" class="text-xs font-label tracking-[0.2em] uppercase text-outline hover:text-primary transition-colors">Country</a>
+        <span class="text-outline/30">/</span>
+        <span id="breadcrumb-dest" class="text-xs font-label tracking-[0.2em] uppercase text-primary">Destination</span>
+    </div>
+
+    <!-- Content Grid (Asymmetric) -->
+    <section class="px-12 py-24 grid grid-cols-12 gap-16 bg-background">
+
+        <!-- Left Column: Details -->
+        <div class="col-span-12 lg:col-span-7 space-y-16">
+
+            <!-- The Legacy -->
+            <div>
+                <h3 class="text-primary font-headline text-2xl tracking-widest uppercase mb-8">The Legacy</h3>
+                <div id="dest-long-desc" class="space-y-6 text-on-surface-variant leading-loose">
+                    <!-- JS injects <p> tags here -->
+                </div>
+            </div>
+
+            <!-- Technical Data HUD -->
+            <div id="dest-details" class="grid grid-cols-2 md:grid-cols-3 gap-8 p-8 border border-outline-variant/15 bg-surface-container-low">
+                <!-- JS generates key-value pairs -->
+            </div>
+
+            <!-- Gallery -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="aspect-[4/5] overflow-hidden">
+                    <img id="dest-gallery-1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt="Gallery image 1" src=""/>
+                </div>
+                <div class="aspect-[4/5] overflow-hidden translate-y-12">
+                    <img id="dest-gallery-2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt="Gallery image 2" src=""/>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Booking & Logistics -->
+        <div class="col-span-12 lg:col-span-5">
+            <div class="sticky top-32 space-y-8">
+
+                <!-- Plan Your Visit Panel -->
+                <div class="glass-panel p-10 border border-white/5">
+                    <h4 class="text-white font-headline text-xl tracking-widest uppercase mb-6">Plan Your Visit</h4>
+                    <div class="space-y-6 mb-10">
+                        <div class="flex justify-between items-center py-4 border-b border-outline-variant/10">
+                            <span class="text-slate-400 font-label text-xs uppercase tracking-widest">Opening Hours</span>
+                            <span id="dest-hours" class="text-white text-sm"></span>
+                        </div>
+                        <div class="flex justify-between items-center py-4 border-b border-outline-variant/10">
+                            <span class="text-slate-400 font-label text-xs uppercase tracking-widest">Base Rate</span>
+                            <span id="dest-price" class="text-secondary text-sm"></span>
+                        </div>
+                        <div class="flex justify-between items-center py-4">
+                            <span class="text-slate-400 font-label text-xs uppercase tracking-widest">Status</span>
+                            <span class="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest">
+                                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                Open Today
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <a id="btn-trip-planner" href="travelplanner.html" class="w-full bg-primary-container text-on-primary-container py-5 text-sm font-bold tracking-[0.2em] uppercase hover:brightness-110 transition-all flex justify-center items-center gap-3">
+                            <span class="material-symbols-outlined text-lg">calendar_add_on</span>
+                            Add to Trip Planner
+                        </a>
+                        <a id="btn-reserve" href="travelplanner.html" class="block w-full border border-primary/30 text-primary py-5 text-sm font-bold tracking-[0.2em] uppercase hover:bg-primary/5 transition-all text-center">
+                            Reserve Expedition
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Explorer Note -->
+                <div class="p-8 bg-surface-container-lowest border border-outline-variant/10 flex items-start gap-4">
+                    <span class="material-symbols-outlined text-secondary">info</span>
+                    <div>
+                        <p class="text-white text-xs font-bold uppercase tracking-widest mb-1">Explorer Note</p>
+                        <p id="dest-tip" class="text-slate-500 text-xs leading-relaxed"></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="w-full py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-[#0b0e14]">
+    <div class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] text-slate-500">
+        © 2024 Celestial Cartographer. Beyond the Horizon.
+    </div>
+    <div class="flex flex-wrap justify-center gap-8 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]">
+        <a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Privacy Policy</a>
+        <a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Terms of Service</a>
+        <a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Galactic Coordinates</a>
+        <a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Contact Support</a>
+    </div>
+</footer>
+
+<!-- HUD Overlays -->
+<div class="fixed inset-0 pointer-events-none border-[1px] border-outline/10 z-30 m-4"></div>
+<div class="fixed bottom-12 left-12 z-50 pointer-events-none">
+    <div id="dest-hud-code" class="text-[0.6rem] font-label text-primary/40 uppercase tracking-[0.5em] [writing-mode:vertical-lr]">
+        DEPT_CULTURAL_ARCHIVE // ---
+    </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/data-asia2a.js"></script>
+<script src="js/data-asia2b.js"></script>
+<script src="js/data-americas.js"></script>
+<script src="js/data-africa-oceania-me.js"></script>
+<script src="js/img-patch.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const countryId = params.get('country');
+    const destId = params.get('id');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        const country = window.COUNTRIES_DATA && window.COUNTRIES_DATA[countryId];
+        const destination = country && country.destinations.find(function (d) { return d.id === destId; });
+
+        if (!destination) {
+            // Redirect to index if destination not found
+            // window.location.href = 'index.html';
+            return;
+        }
+
+        // Page title
+        document.title = destination.name + ' | Celestial Cartographer';
+
+        // Hero image
+        var heroImg = document.getElementById('dest-hero-img');
+        if (heroImg && destination.heroImage) {
+            heroImg.src = destination.heroImage;
+            heroImg.alt = destination.name;
+        }
+
+        // Category badge
+        var categoryEl = document.getElementById('dest-category');
+        if (categoryEl && destination.category) {
+            categoryEl.textContent = destination.category;
+        }
+
+        // Coordinates
+        var coordEl = document.getElementById('dest-coordinates');
+        if (coordEl && destination.coordinates) {
+            coordEl.textContent = destination.coordinates;
+        }
+
+        // Destination name heading
+        var nameEl = document.getElementById('dest-name');
+        if (nameEl) {
+            nameEl.textContent = destination.name;
+        }
+
+        // Breadcrumb destination
+        var breadcrumbDest = document.getElementById('breadcrumb-dest');
+        if (breadcrumbDest) {
+            breadcrumbDest.textContent = destination.name;
+        }
+
+        // Hero short description
+        var descEl = document.getElementById('dest-description');
+        if (descEl && destination.description) {
+            descEl.textContent = destination.description;
+        }
+
+        // Long description — inject paragraph tags
+        var longDescEl = document.getElementById('dest-long-desc');
+        if (longDescEl && destination.longDescription) {
+            var paragraphs = Array.isArray(destination.longDescription)
+                ? destination.longDescription
+                : destination.longDescription.split(/\n\n+/);
+            longDescEl.innerHTML = '';
+            paragraphs.forEach(function (text) {
+                var p = document.createElement('p');
+                p.textContent = text;
+                longDescEl.appendChild(p);
+            });
+        }
+
+        // Technical Data HUD — iterate over destination.details
+        var detailsEl = document.getElementById('dest-details');
+        if (detailsEl && destination.details) {
+            detailsEl.innerHTML = '';
+            var details = destination.details;
+            Object.keys(details).forEach(function (key) {
+                var item = document.createElement('div');
+                var label = document.createElement('p');
+                label.className = 'text-slate-500 font-label text-[0.6rem] uppercase tracking-widest mb-2';
+                label.textContent = key;
+                var value = document.createElement('p');
+                value.className = 'text-white font-medium uppercase tracking-tighter';
+                value.textContent = details[key];
+                item.appendChild(label);
+                item.appendChild(value);
+                detailsEl.appendChild(item);
+            });
+        }
+
+        // Gallery images
+        var gallery1 = document.getElementById('dest-gallery-1');
+        if (gallery1 && destination.galleryImages && destination.galleryImages[0]) {
+            gallery1.src = destination.galleryImages[0];
+            gallery1.alt = destination.name + ' — gallery image 1';
+        }
+        var gallery2 = document.getElementById('dest-gallery-2');
+        if (gallery2 && destination.galleryImages && destination.galleryImages[1]) {
+            gallery2.src = destination.galleryImages[1];
+            gallery2.alt = destination.name + ' — gallery image 2';
+        }
+
+        // Opening hours
+        var hoursEl = document.getElementById('dest-hours');
+        if (hoursEl && destination.hours) {
+            hoursEl.textContent = destination.hours;
+        }
+
+        // Price
+        var priceEl = document.getElementById('dest-price');
+        if (priceEl && destination.price) {
+            priceEl.textContent = destination.price;
+        }
+
+        // Explorer tip
+        var tipEl = document.getElementById('dest-tip');
+        if (tipEl && destination.tip) {
+            tipEl.textContent = destination.tip;
+        }
+
+        // HUD archive code
+        var hudCode = document.getElementById('dest-hud-code');
+        if (hudCode) {
+            var code = destination.name.toUpperCase().replace(/\s+/g, '_').substring(0, 12);
+            hudCode.textContent = 'DEPT_CULTURAL_ARCHIVE // ' + code;
+        }
+
+        // Build the trip planner URL
+        var plannerUrl = 'travelplanner.html?country=' + encodeURIComponent(countryId) + '&id=' + encodeURIComponent(destId);
+
+        // "Book Expedition" sidebar button
+        var btnBookExpedition = document.getElementById('btn-book-expedition');
+        if (btnBookExpedition) {
+            btnBookExpedition.href = plannerUrl;
+        }
+
+        // "Add to Trip Planner" button
+        var btnTripPlanner = document.getElementById('btn-trip-planner');
+        if (btnTripPlanner) {
+            btnTripPlanner.removeAttribute('href');
+            btnTripPlanner.style.cursor = 'pointer';
+            btnTripPlanner.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTrip(false);
+            });
+        }
+
+        // "Reserve Expedition" button
+        var btnReserve = document.getElementById('btn-reserve');
+        if (btnReserve) {
+            btnReserve.removeAttribute('href');
+            btnReserve.style.cursor = 'pointer';
+            btnReserve.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTrip(true);
+            });
+        }
+
+        // saveTrip function
+        function saveTrip(navigateAfter) {
+            var trips = JSON.parse(localStorage.getItem('atlas_trips') || '[]');
+            var tripObj = {
+                id: destId,
+                countryId: countryId,
+                name: destination.name,
+                country: country ? country.name : countryId,
+                heroImage: destination.heroImage || '',
+                category: destination.category || '',
+                addedAt: new Date().toISOString(),
+                favorite: false
+            };
+            // Avoid duplicates by id+countryId
+            var exists = trips.some(function (t) {
+                return t.id === tripObj.id && t.countryId === tripObj.countryId;
+            });
+            if (!exists) {
+                trips.push(tripObj);
+                localStorage.setItem('atlas_trips', JSON.stringify(trips));
+            }
+            showToast('Trip saved! View in My Trips');
+            if (navigateAfter) {
+                setTimeout(function () {
+                    window.location.href = plannerUrl;
+                }, 1000);
+            }
+        }
+
+        // Back to country breadcrumb link
+        var backToCountry = document.getElementById('back-to-country');
+        if (backToCountry) {
+            backToCountry.href = 'country.html?id=' + encodeURIComponent(countryId);
+            backToCountry.textContent = country.name || countryId;
+        }
+    });
+</script>
+
+<!-- ────────────────────── NEW UTILITIES ────────────────────── -->
+<style>
+/* ── Toast ── */
+#atlas-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(2rem);
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.875rem 2rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+#atlas-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Login Modal ── */
+#login-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(16, 20, 25, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+}
+#login-modal.open { display: flex; }
+
+#login-box {
+  background: rgba(28, 32, 38, 0.98);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+.login-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.login-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  margin-bottom: 2rem;
+}
+.login-field {
+  width: 100%;
+  background: rgba(16, 20, 25, 0.8);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+  color: #e0e2eb;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  padding: 0.875rem 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+.login-field:focus { border-color: rgba(0, 229, 255, 0.5); }
+.login-btn-primary {
+  width: 100%;
+  background: #00e5ff;
+  color: #00363d;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn-primary:hover { filter: brightness(1.1); }
+.login-create-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.login-create-link:hover { color: #c3f5ff; }
+.login-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+}
+.login-close:hover { color: #c3f5ff; }
+#login-logged-in { display: none; text-align: center; padding: 1rem 0; }
+.login-user-email {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  color: #00e5ff;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.login-btn-signout {
+  background: none;
+  border: 1px solid rgba(132, 147, 150, 0.3);
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-btn-signout:hover { border-color: #c3f5ff; color: #c3f5ff; }
+</style>
+
+<script>
+// ── Toast Utility ─────────────────────────────────────────────────────────
+(function () {
+  var toast = document.createElement('div');
+  toast.id = 'atlas-toast';
+  document.body.appendChild(toast);
+})();
+
+window.showToast = function (msg, duration) {
+  var toast = document.getElementById('atlas-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function () {
+    toast.classList.remove('show');
+  }, duration || 3000);
+};
+
+// ── Login Modal ────────────────────────────────────────────────────────────
+(function () {
+  var modal = document.createElement('div');
+  modal.id = 'login-modal';
+  modal.innerHTML =
+    '<div id="login-box">' +
+      '<button class="login-close" onclick="closeLoginModal()" aria-label="Close"><span class="material-symbols-outlined">close</span></button>' +
+      '<p class="login-title">Atlas Horizon</p>' +
+      '<p class="login-subtitle">Sign in to your account</p>' +
+      '<div id="login-form-section">' +
+        '<input id="login-email" class="login-field" type="email" placeholder="Email address" autocomplete="email" />' +
+        '<input id="login-password" class="login-field" type="password" placeholder="Password" autocomplete="current-password" />' +
+        '<button class="login-btn-primary" onclick="doLogin()">Sign In</button>' +
+        '<span class="login-create-link" onclick="doCreateAccount()">Create Account</span>' +
+      '</div>' +
+      '<div id="login-logged-in">' +
+        '<span class="login-user-email" id="login-display-email"></span>' +
+        '<p style="color:#849396;font-size:0.75rem;letter-spacing:0.1em;margin-bottom:1.5rem;">You are signed in</p>' +
+        '<button class="login-btn-signout" onclick="doSignOut()">Sign Out</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeLoginModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLoginModal();
+  });
+
+  function refreshLoginState() {
+    var user = localStorage.getItem('atlas_user');
+    var btn = document.getElementById('btn-login');
+    if (btn) {
+      var icon = btn;
+      if (icon && user) {
+        icon.style.color = '#00e5ff';
+      }
+    }
+  }
+  refreshLoginState();
+  window._refreshLoginState = refreshLoginState;
+})();
+
+window.openLoginModal = function () {
+  var user = JSON.parse(localStorage.getItem('atlas_user') || 'null');
+  document.getElementById('login-form-section').style.display = user ? 'none' : '';
+  document.getElementById('login-logged-in').style.display = user ? 'block' : 'none';
+  if (user) {
+    document.getElementById('login-display-email').textContent = user.email;
+  }
+  document.getElementById('login-modal').classList.add('open');
+};
+
+window.closeLoginModal = function () {
+  document.getElementById('login-modal').classList.remove('open');
+};
+
+window.doLogin = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Welcome back, ' + email + '!');
+};
+
+window.doCreateAccount = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Account created! Welcome, ' + email + '.');
+};
+
+window.doSignOut = function () {
+  localStorage.removeItem('atlas_user');
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Signed out successfully.');
+};
+</script>
+
+</body>
+</html>

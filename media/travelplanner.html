@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#101419",
+                        "outline": "#849396",
+                        "secondary-fixed-dim": "#fabd00",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-error": "#690005",
+                        "on-primary": "#00363d",
+                        "secondary": "#ffdf9e",
+                        "tertiary-fixed-dim": "#f3bf26",
+                        "inverse-primary": "#006875",
+                        "surface-container-high": "#262a31",
+                        "surface": "#101419",
+                        "on-background": "#e0e2eb",
+                        "tertiary": "#ffeac0",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-secondary-fixed": "#261a00",
+                        "secondary-container": "#fabd00",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#bac9cc",
+                        "background": "#101419",
+                        "secondary-fixed": "#ffdf9e",
+                        "primary-container": "#00e5ff",
+                        "outline-variant": "#3b494c",
+                        "on-surface": "#e0e2eb",
+                        "surface-bright": "#363940",
+                        "inverse-surface": "#e0e2eb",
+                        "inverse-on-surface": "#2d3137",
+                        "surface-container": "#1c2026",
+                        "on-primary-fixed": "#001f24",
+                        "on-secondary": "#3f2e00",
+                        "primary": "#c3f5ff",
+                        "on-tertiary": "#3e2e00",
+                        "primary-fixed": "#9cf0ff",
+                        "surface-container-highest": "#31353c",
+                        "on-secondary-container": "#6a4e00",
+                        "surface-container-lowest": "#0b0e14",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-tertiary-container": "#6f5500",
+                        "on-primary-container": "#00626e",
+                        "surface-container-low": "#181c22",
+                        "surface-tint": "#00daf3",
+                        "tertiary-fixed": "#ffdf96",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004f58",
+                        "tertiary-container": "#fec931",
+                        "surface-variant": "#31353c"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .hud-line {
+            background: linear-gradient(90deg, transparent, rgba(132, 147, 150, 0.1), transparent);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 selection:text-primary overflow-hidden">
+<!-- Data scripts -->
+<script src="js/data.js"></script>
+<script src="js/data-asia2a.js"></script>
+<script src="js/data-asia2b.js"></script>
+<script src="js/data-americas.js"></script>
+<script src="js/data-africa-oceania-me.js"></script>
+<script src="js/img-patch.js"></script>
+
+<!-- Background Content: Destination (Blurred, dynamically populated) -->
+<div class="fixed inset-0 z-0 blur-md grayscale-[0.2] brightness-50">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background"></div>
+<!-- Background hero image -->
+<img id="bg-hero-img" class="absolute inset-0 w-full h-full object-cover" src="https://source.unsplash.com/3840x2160/?travel,landscape" alt="destination"/>
+<div class="grid grid-cols-12 gap-8 p-12 h-full relative z-10">
+<div class="col-span-8 flex flex-col justify-center">
+<span id="bg-region" class="font-headline tracking-[0.2em] text-primary text-sm uppercase mb-4">Select a Destination</span>
+<h1 id="bg-name" class="font-headline text-8xl font-bold tracking-[0.1em] text-white leading-none mb-8">YOUR<br/>EXPEDITION</h1>
+<div class="flex gap-12">
+<div class="space-y-1">
+<p class="font-label text-[0.6875rem] uppercase tracking-widest text-outline">Coordinates</p>
+<p id="bg-coords" class="font-headline text-xl text-on-surface-variant">— — ° N</p>
+</div>
+<div class="space-y-1">
+<p class="font-label text-[0.6875rem] uppercase tracking-widest text-outline">Status</p>
+<p class="font-headline text-xl text-on-surface-variant">Awaiting Departure</p>
+</div>
+</div>
+</div>
+<div class="col-span-4 self-center">
+<div class="aspect-[3/4] bg-surface-container rounded-lg overflow-hidden relative">
+<img id="bg-thumb-img" class="w-full h-full object-cover" src="https://source.unsplash.com/600x800/?travel" alt="destination thumbnail"/>
+</div>
+</div>
+</div>
+</div>
+<!-- HUD Overlay -->
+<div class="fixed inset-0 pointer-events-none z-10 border-[1px] border-outline/10 m-6"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-transparent dark:bg-transparent backdrop-blur-md">
+<div class="text-2xl font-bold tracking-[0.2em] text-white dark:text-white hover:text-cyan-400 transition-colors font-headline">CELESTIAL</div>
+<div class="hidden md:flex gap-12 items-center">
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm" href="index.html">Explore</a>
+<a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm" href="index.html">Destinations</a>
+<a class="text-cyan-400 font-bold font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm border-b border-cyan-400 pb-1" href="#">My Trips</a>
+<div id="btn-login" class="material-symbols-outlined text-cyan-400 cursor-pointer text-2xl hover:scale-95 duration-200 ease-in-out" onclick="openLoginModal()" data-icon="account_circle">account_circle</div>
+</div>
+</nav>
+<!-- SideNavBar (Expanded Planner) -->
+<aside class="fixed right-0 top-0 h-full z-40 flex flex-col p-8 bg-slate-900/40 dark:bg-[#181c22]/60 backdrop-blur-xl border-l border-white/10 shadow-[0_0_40px_rgba(0,229,255,0.06)] w-80 md:w-96 font-['Inter'] text-sm tracking-wide">
+<!-- Close Action for Task Focus -->
+<div class="absolute top-8 right-8 cursor-pointer text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">close</span>
+</div>
+<div class="mt-12 mb-8">
+<h2 class="text-lg font-bold text-white font-headline">Voyage Planner</h2>
+<p class="text-cyan-400/80 text-xs tracking-widest uppercase mt-1">Coordinates Saved</p>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col mb-10">
+<a id="tab-all" class="text-cyan-400 font-bold flex items-center gap-4 py-3 border-r-2 border-cyan-400 hover:bg-white/5 transition-colors" href="#" onclick="switchTab('all'); return false;">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+                All Trips
+            </a>
+<a id="tab-favorites" class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#" onclick="switchTab('favorites'); return false;">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+                Favorites
+            </a>
+<a id="tab-recent" class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#" onclick="switchTab('recent'); return false;">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                Recent
+            </a>
+<a id="tab-settings" class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#" onclick="switchTab('settings'); return false;">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- Coordinates List (Planner Details) -->
+<div class="flex-grow overflow-y-auto space-y-6 pr-2 scrollbar-hide">
+<div>
+<label class="font-label text-[0.6875rem] uppercase tracking-[0.15em] text-outline block mb-4">Current Selection</label>
+<div class="p-4 bg-surface-container-high/40 rounded-lg border border-white/5">
+<div class="flex items-center gap-4 mb-3">
+<div class="w-12 h-12 rounded bg-surface-container-lowest overflow-hidden">
+<img id="sidebar-thumb" class="w-full h-full object-cover" src="https://source.unsplash.com/100x100/?travel" alt="destination"/>
+</div>
+<div>
+<p id="sidebar-name" class="text-white font-medium">Select a Destination</p>
+<p id="sidebar-region" class="text-[0.625rem] text-cyan-400 tracking-tighter uppercase">—</p>
+</div>
+</div>
+<!-- Booking Form -->
+<div id="booking-form" class="space-y-4 mt-4">
+<div>
+<label class="text-outline block uppercase text-[0.6rem] tracking-widest mb-1">Departure Date</label>
+<div class="flex items-center gap-1">
+<input type="date" id="input-departure" class="flex-1 bg-surface-container-lowest border border-outline/20 text-on-surface text-xs px-3 py-2 focus:outline-none focus:border-primary/50 rounded-none" style="color-scheme: dark;"/>
+<button type="button" onclick="document.getElementById('input-departure').showPicker ? document.getElementById('input-departure').showPicker() : document.getElementById('input-departure').focus()" class="bg-surface-container-lowest border border-outline/20 text-outline hover:text-primary px-2 py-2 transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+</button>
+</div>
+</div>
+<div>
+<label class="text-outline block uppercase text-[0.6rem] tracking-widest mb-1">Return Date</label>
+<div class="flex items-center gap-1">
+<input type="date" id="input-return" class="flex-1 bg-surface-container-lowest border border-outline/20 text-on-surface text-xs px-3 py-2 focus:outline-none focus:border-primary/50 rounded-none" style="color-scheme: dark;"/>
+<button type="button" onclick="document.getElementById('input-return').showPicker ? document.getElementById('input-return').showPicker() : document.getElementById('input-return').focus()" class="bg-surface-container-lowest border border-outline/20 text-outline hover:text-primary px-2 py-2 transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+</button>
+</div>
+</div>
+<div>
+<label class="text-outline block uppercase text-[0.6rem] tracking-widest mb-1">Travelers</label>
+<select id="input-travelers" class="w-full bg-surface-container-lowest border border-outline/20 text-on-surface text-xs px-3 py-2 focus:outline-none focus:border-primary/50 rounded-none">
+<option value="1">1 Explorer</option>
+<option value="2" selected>2 Explorers</option>
+<option value="3">3 Explorers</option>
+<option value="4">4 Explorers</option>
+<option value="5+">5+ Explorers</option>
+</select>
+</div>
+<div>
+<label class="text-outline block uppercase text-[0.6rem] tracking-widest mb-1">Special Requirements</label>
+<textarea id="input-requirements" rows="2" placeholder="Accessibility, dietary, other notes..." class="w-full bg-surface-container-lowest border border-outline/20 text-on-surface text-xs px-3 py-2 focus:outline-none focus:border-primary/50 rounded-none resize-none placeholder-outline/50"></textarea>
+</div>
+</div>
+<!-- Confirmation State (hidden by default) -->
+<div id="booking-confirmed" class="hidden mt-4 p-4 border border-primary/20 bg-primary/5 text-center">
+<span class="material-symbols-outlined text-primary text-3xl mb-2 block" style="font-variation-settings:'FILL' 1;">check_circle</span>
+<p class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-1">Expedition Secured</p>
+<p id="confirm-details" class="text-outline text-[0.6rem] tracking-widest">—</p>
+</div>
+<div class="grid grid-cols-2 gap-2 text-[0.6875rem] mt-3">
+<div class="bg-surface-container-lowest/50 p-2">
+<span class="text-outline block uppercase">Destination</span>
+<span id="detail-dest" class="text-on-surface">—</span>
+</div>
+<div class="bg-surface-container-lowest/50 p-2">
+<span class="text-outline block uppercase">Price</span>
+<span id="detail-price" class="text-on-surface">—</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<label id="trips-panel-label" class="font-label text-[0.6875rem] uppercase tracking-[0.15em] text-outline block mb-4">All Trips</label>
+<div id="trips-list" class="space-y-3">
+<!-- Dynamically populated from localStorage -->
+</div>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="mt-8 pt-8 border-t border-white/5">
+<button id="btn-book" onclick="bookExpedition()" class="w-full bg-primary-container text-on-primary-container font-headline font-bold py-4 tracking-[0.1em] uppercase hover:brightness-110 active:scale-95 transition-all duration-200">
+                Book Expedition
+            </button>
+<p class="text-[0.625rem] text-center text-outline mt-4 uppercase tracking-[0.2em]">Telemetry Secure • SSL Encrypted</p>
+</div>
+</aside>
+<!-- Footer -->
+<footer class="fixed bottom-0 left-0 w-full py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-[#0b0e14] z-20 md:pr-[400px]">
+<div class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]">© 2024 Celestial Cartographer. Beyond the Horizon.</div>
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-cyan-400 transition-colors font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-cyan-400 transition-colors font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-cyan-400 transition-colors font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]" href="#">Contact Support</a>
+</div>
+</footer>
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var countryId = params.get('country');
+  var destId = params.get('id');
+
+  function populate(){
+    var country = window.COUNTRIES_DATA && window.COUNTRIES_DATA[countryId];
+    var dest = country && country.destinations && country.destinations.find(function(d){return d.id===destId;});
+
+    if(dest){
+      // Background
+      var bgImg = document.getElementById('bg-hero-img');
+      if(bgImg) bgImg.src = dest.heroImage;
+      var bgThumb = document.getElementById('bg-thumb-img');
+      if(bgThumb) bgThumb.src = dest.galleryImages[0] || dest.heroImage;
+      var bgName = document.getElementById('bg-name');
+      if(bgName) bgName.innerHTML = dest.name.toUpperCase().replace(' ','<br/>');
+      var bgRegion = document.getElementById('bg-region');
+      if(bgRegion) bgRegion.textContent = dest.location;
+      var bgCoords = document.getElementById('bg-coords');
+      if(bgCoords) bgCoords.textContent = dest.coordinates;
+      // Sidebar
+      var sThumb = document.getElementById('sidebar-thumb');
+      if(sThumb) sThumb.src = dest.heroImage;
+      var sName = document.getElementById('sidebar-name');
+      if(sName) sName.textContent = dest.name + (country ? ', ' + country.name.substring(0,2).toUpperCase() : '');
+      var sRegion = document.getElementById('sidebar-region');
+      if(sRegion) sRegion.textContent = dest.location;
+      var dDest = document.getElementById('detail-dest');
+      if(dDest) dDest.textContent = dest.name;
+      var dPrice = document.getElementById('detail-price');
+      if(dPrice) dPrice.textContent = dest.price || '—';
+      document.title = 'Book ' + dest.name + ' | Celestial Cartographer';
+    }
+  }
+
+  // Set date picker min to today
+  var today = new Date().toISOString().split('T')[0];
+  var depInput = document.getElementById('input-departure');
+  var retInput = document.getElementById('input-return');
+  if(depInput) depInput.min = today;
+  if(retInput) retInput.min = today;
+  // Enforce return >= departure
+  if(depInput){
+    depInput.addEventListener('change', function(){
+      if(retInput && retInput.value && retInput.value < depInput.value){
+        retInput.value = depInput.value;
+      }
+      if(retInput) retInput.min = depInput.value || today;
+    });
+  }
+
+  // Try immediately, then after small delay for data scripts
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(populate, 100); setTimeout(renderTrips, 150); });
+  } else {
+    setTimeout(populate, 100);
+    setTimeout(renderTrips, 150);
+  }
+
+  window.bookExpedition = function(){
+    var dep = document.getElementById('input-departure').value;
+    var ret = document.getElementById('input-return').value;
+    var trav = document.getElementById('input-travelers').value;
+    var req = document.getElementById('input-requirements').value.trim();
+    var destName = document.getElementById('sidebar-name').textContent;
+
+    if(!dep || !ret){
+      alert('Please select departure and return dates.');
+      return;
+    }
+    if(ret < dep){
+      alert('Return date must be after departure date.');
+      return;
+    }
+
+    // Build WhatsApp message
+    var waMsg = 'Hi! I\'d like to book an expedition to ' + destName + '. Departure: ' + dep + ', Return: ' + ret + ', Travelers: ' + trav + (req ? ', Special requirements: ' + req : '') + '.';
+    window.open('https://wa.me/919515199257?text=' + encodeURIComponent(waMsg), '_blank');
+
+    // Show confirmation state
+    document.getElementById('booking-form').classList.add('hidden');
+    document.getElementById('booking-confirmed').classList.remove('hidden');
+    document.getElementById('btn-book').textContent = 'Modify Expedition';
+    document.getElementById('btn-book').onclick = function(){
+      document.getElementById('booking-form').classList.remove('hidden');
+      document.getElementById('booking-confirmed').classList.add('hidden');
+      document.getElementById('btn-book').textContent = 'Book Expedition';
+      document.getElementById('btn-book').onclick = window.bookExpedition;
+    };
+
+    var depDate = new Date(dep);
+    var retDate = new Date(ret);
+    var nights = Math.round((retDate - depDate) / 86400000);
+    document.getElementById('confirm-details').textContent =
+      destName + ' • ' + dep + ' → ' + ret + ' • ' + trav + ' explorer(s) • ' + nights + ' nights';
+  };
+})();
+</script>
+
+<!-- ────────────────────── NEW UTILITIES & TRIP MANAGEMENT ────────────────────── -->
+<style>
+/* ── Toast ── */
+#atlas-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(2rem);
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.875rem 2rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+#atlas-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Trip Cards ── */
+.trip-card {
+  padding: 0.75rem;
+  background: rgba(38, 42, 49, 0.5);
+  border: 1px solid rgba(59, 73, 76, 0.2);
+  transition: border-color 0.2s;
+}
+.trip-card:hover { border-color: rgba(0, 229, 255, 0.2); }
+.trip-heart {
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.2s;
+}
+.trip-heart:hover { color: #ff6b9d; }
+.trip-heart .material-symbols-outlined { font-size: 1rem; }
+.trip-btn-book {
+  flex: 1;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.5625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.375rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.trip-btn-book:hover { background: rgba(0, 229, 255, 0.2); }
+.trip-btn-remove {
+  flex: 1;
+  background: none;
+  border: 1px solid rgba(132, 147, 150, 0.15);
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.5625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.trip-btn-remove:hover { border-color: rgba(255, 107, 107, 0.4); color: #ff6b6b; }
+.trips-empty {
+  text-align: center;
+  padding: 2rem 0;
+  color: #849396;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ── Login Modal ── */
+#login-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(16, 20, 25, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+}
+#login-modal.open { display: flex; }
+
+#login-box {
+  background: rgba(28, 32, 38, 0.98);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+.login-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.login-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  margin-bottom: 2rem;
+}
+.login-field {
+  width: 100%;
+  background: rgba(16, 20, 25, 0.8);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+  color: #e0e2eb;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  padding: 0.875rem 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+.login-field:focus { border-color: rgba(0, 229, 255, 0.5); }
+.login-btn-primary {
+  width: 100%;
+  background: #00e5ff;
+  color: #00363d;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn-primary:hover { filter: brightness(1.1); }
+.login-create-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.login-create-link:hover { color: #c3f5ff; }
+.login-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+}
+.login-close:hover { color: #c3f5ff; }
+#login-logged-in { display: none; text-align: center; padding: 1rem 0; }
+.login-user-email {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  color: #00e5ff;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.login-btn-signout {
+  background: none;
+  border: 1px solid rgba(132, 147, 150, 0.3);
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-btn-signout:hover { border-color: #c3f5ff; color: #c3f5ff; }
+</style>
+
+<script>
+// ── Toast Utility ─────────────────────────────────────────────────────────
+(function () {
+  var toast = document.createElement('div');
+  toast.id = 'atlas-toast';
+  document.body.appendChild(toast);
+})();
+
+window.showToast = function (msg, duration) {
+  var toast = document.getElementById('atlas-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function () {
+    toast.classList.remove('show');
+  }, duration || 3000);
+};
+
+// ── Trip Management ───────────────────────────────────────────────────────
+var currentTabFilter = 'all'; // 'all' | 'favorites' | 'recent' | 'settings'
+
+function buildTripCard(trip, index) {
+  return (
+    '<div class="trip-card" data-index="' + index + '" data-id="' + trip.id + '" data-country-id="' + trip.countryId + '">' +
+      '<div class="flex items-center gap-3">' +
+        '<div class="w-10 h-10 overflow-hidden flex-shrink-0">' +
+          '<img src="' + (trip.heroImage || '') + '" class="w-full h-full object-cover" alt="' + trip.name + '" />' +
+        '</div>' +
+        '<div class="flex-1 min-w-0">' +
+          '<p class="text-white text-xs font-medium truncate">' + trip.name + '</p>' +
+          '<p class="text-[0.625rem] text-cyan-400 tracking-tighter uppercase truncate">' + trip.country + '</p>' +
+        '</div>' +
+        '<button class="trip-heart" onclick="toggleFavorite(' + index + ')" title="Favorite">' +
+          '<span class="material-symbols-outlined text-sm" style="font-variation-settings: \'FILL\' ' + (trip.favorite ? '1' : '0') + '">favorite</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="flex gap-2 mt-2">' +
+        '<button class="trip-btn-book" onclick="loadTripIntoForm(' + index + ')">Book</button>' +
+        '<button class="trip-btn-remove" onclick="removeTrip(' + index + ')">Remove</button>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+window.renderTrips = function () {
+  var trips = JSON.parse(localStorage.getItem('atlas_trips') || '[]');
+  var listEl = document.getElementById('trips-list');
+  var labelEl = document.getElementById('trips-panel-label');
+
+  if (!listEl) return;
+
+  if (currentTabFilter === 'settings') {
+    renderSettingsPanel();
+    return;
+  }
+
+  var filtered = trips.slice();
+
+  if (currentTabFilter === 'favorites') {
+    filtered = filtered.filter(function (t) { return t.favorite; });
+    if (labelEl) labelEl.textContent = 'Favorites';
+  } else if (currentTabFilter === 'recent') {
+    filtered = filtered.sort(function (a, b) {
+      return new Date(b.addedAt) - new Date(a.addedAt);
+    });
+    if (labelEl) labelEl.textContent = 'Recently Added';
+  } else {
+    if (labelEl) labelEl.textContent = 'All Trips';
+  }
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="trips-empty">No trips found</div>';
+    return;
+  }
+
+  var html = '';
+  filtered.forEach(function (trip) {
+    var originalIndex = trips.indexOf(trip);
+    html += buildTripCard(trip, originalIndex);
+  });
+  listEl.innerHTML = html;
+};
+
+window.loadTripIntoForm = function (index) {
+  var trips = JSON.parse(localStorage.getItem('atlas_trips') || '[]');
+  var trip = trips[index];
+  if (!trip) return;
+
+  var sName = document.getElementById('sidebar-name');
+  if (sName) sName.textContent = trip.name + ', ' + trip.country.substring(0, 2).toUpperCase();
+  var sRegion = document.getElementById('sidebar-region');
+  if (sRegion) sRegion.textContent = trip.country;
+  var sThumb = document.getElementById('sidebar-thumb');
+  if (sThumb) sThumb.src = trip.heroImage;
+  var dDest = document.getElementById('detail-dest');
+  if (dDest) dDest.textContent = trip.name;
+
+  var data = window.COUNTRIES_DATA;
+  var country = data && data[trip.countryId];
+  var dest = country && country.destinations && country.destinations.find(function (d) { return d.id === trip.id; });
+  var dPrice = document.getElementById('detail-price');
+  if (dPrice) dPrice.textContent = (dest && dest.price) ? dest.price : '—';
+
+  var bgImg = document.getElementById('bg-hero-img');
+  if (bgImg) bgImg.src = trip.heroImage;
+  var bgName = document.getElementById('bg-name');
+  if (bgName) bgName.innerHTML = trip.name.toUpperCase().replace(' ', '<br/>');
+  var bgRegion = document.getElementById('bg-region');
+  if (bgRegion) bgRegion.textContent = trip.country;
+
+  document.getElementById('booking-form').classList.remove('hidden');
+  document.getElementById('booking-confirmed').classList.add('hidden');
+
+  showToast('Loaded: ' + trip.name);
+};
+
+window.removeTrip = function (index) {
+  var trips = JSON.parse(localStorage.getItem('atlas_trips') || '[]');
+  trips.splice(index, 1);
+  localStorage.setItem('atlas_trips', JSON.stringify(trips));
+  renderTrips();
+  showToast('Trip removed.');
+};
+
+window.toggleFavorite = function (index) {
+  var trips = JSON.parse(localStorage.getItem('atlas_trips') || '[]');
+  if (trips[index]) {
+    trips[index].favorite = !trips[index].favorite;
+    localStorage.setItem('atlas_trips', JSON.stringify(trips));
+    renderTrips();
+  }
+};
+
+window.switchTab = function (tab) {
+  currentTabFilter = tab;
+  var tabs = ['all', 'favorites', 'recent', 'settings'];
+  tabs.forEach(function (t) {
+    var el = document.getElementById('tab-' + t);
+    if (!el) return;
+    if (t === tab) {
+      el.classList.add('text-cyan-400', 'font-bold', 'border-r-2', 'border-cyan-400');
+      el.classList.remove('text-slate-400');
+    } else {
+      el.classList.remove('text-cyan-400', 'font-bold', 'border-r-2', 'border-cyan-400');
+      el.classList.add('text-slate-400');
+    }
+  });
+  renderTrips();
+};
+
+function renderSettingsPanel() {
+  var listEl = document.getElementById('trips-list');
+  var labelEl = document.getElementById('trips-panel-label');
+  if (labelEl) labelEl.textContent = 'Settings';
+  if (!listEl) return;
+  listEl.innerHTML =
+    '<div class="space-y-4 pt-2">' +
+      '<button onclick="clearAllTrips()" class="w-full text-left px-3 py-3 border border-outline/10 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant hover:border-red-500/30 hover:text-red-400 transition-all">' +
+        '<span class="material-symbols-outlined text-sm align-middle mr-2">delete_sweep</span>Clear All Trips' +
+      '</button>' +
+      '<div class="flex items-center justify-between px-3 py-3 border border-outline/10">' +
+        '<span class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant">Notifications</span>' +
+        '<label class="relative inline-flex items-center cursor-pointer">' +
+          '<input type="checkbox" id="notif-toggle" class="sr-only peer" ' + (localStorage.getItem('atlas_notifications') === '1' ? 'checked' : '') + ' onchange="toggleNotifications(this.checked)">' +
+          '<div class="w-9 h-5 bg-outline/20 peer-focus:outline-none rounded-full peer peer-checked:bg-primary-container peer-checked:after:translate-x-full after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>' +
+        '</label>' +
+      '</div>' +
+    '</div>';
+}
+
+window.clearAllTrips = function () {
+  if (confirm('Clear all saved trips? This cannot be undone.')) {
+    localStorage.removeItem('atlas_trips');
+    renderTrips();
+    showToast('All trips cleared.');
+  }
+};
+
+window.toggleNotifications = function (val) {
+  localStorage.setItem('atlas_notifications', val ? '1' : '0');
+};
+
+// ── Login Modal ────────────────────────────────────────────────────────────
+(function () {
+  var modal = document.createElement('div');
+  modal.id = 'login-modal';
+  modal.innerHTML =
+    '<div id="login-box">' +
+      '<button class="login-close" onclick="closeLoginModal()" aria-label="Close"><span class="material-symbols-outlined">close</span></button>' +
+      '<p class="login-title">Atlas Horizon</p>' +
+      '<p class="login-subtitle">Sign in to your account</p>' +
+      '<div id="login-form-section">' +
+        '<input id="login-email" class="login-field" type="email" placeholder="Email address" autocomplete="email" />' +
+        '<input id="login-password" class="login-field" type="password" placeholder="Password" autocomplete="current-password" />' +
+        '<button class="login-btn-primary" onclick="doLogin()">Sign In</button>' +
+        '<span class="login-create-link" onclick="doCreateAccount()">Create Account</span>' +
+      '</div>' +
+      '<div id="login-logged-in">' +
+        '<span class="login-user-email" id="login-display-email"></span>' +
+        '<p style="color:#849396;font-size:0.75rem;letter-spacing:0.1em;margin-bottom:1.5rem;">You are signed in</p>' +
+        '<button class="login-btn-signout" onclick="doSignOut()">Sign Out</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeLoginModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLoginModal();
+  });
+
+  function refreshLoginState() {
+    var user = localStorage.getItem('atlas_user');
+    var btn = document.getElementById('btn-login');
+    if (btn && user) {
+      btn.style.color = '#00e5ff';
+    }
+  }
+  refreshLoginState();
+  window._refreshLoginState = refreshLoginState;
+})();
+
+window.openLoginModal = function () {
+  var user = JSON.parse(localStorage.getItem('atlas_user') || 'null');
+  document.getElementById('login-form-section').style.display = user ? 'none' : '';
+  document.getElementById('login-logged-in').style.display = user ? 'block' : 'none';
+  if (user) {
+    document.getElementById('login-display-email').textContent = user.email;
+  }
+  document.getElementById('login-modal').classList.add('open');
+};
+
+window.closeLoginModal = function () {
+  document.getElementById('login-modal').classList.remove('open');
+};
+
+window.doLogin = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Welcome back, ' + email + '!');
+};
+
+window.doCreateAccount = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Account created! Welcome, ' + email + '.');
+};
+
+window.doSignOut = function () {
+  localStorage.removeItem('atlas_user');
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Signed out successfully.');
+};
+</script>
+
+</body></html>

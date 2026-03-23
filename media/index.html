@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Celestial Cartographer — Global Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-dim": "#101419", "outline": "#849396", "secondary-fixed-dim": "#fabd00",
+          "error-container": "#93000a", "on-tertiary-fixed-variant": "#594400",
+          "on-error": "#690005", "on-primary": "#00363d", "secondary": "#ffdf9e",
+          "tertiary-fixed-dim": "#f3bf26", "inverse-primary": "#006875",
+          "surface-container-high": "#262a31", "surface": "#101419",
+          "on-background": "#e0e2eb", "tertiary": "#ffeac0", "on-tertiary-fixed": "#251a00",
+          "on-secondary-fixed": "#261a00", "secondary-container": "#fabd00",
+          "error": "#ffb4ab", "on-surface-variant": "#bac9cc", "background": "#101419",
+          "secondary-fixed": "#ffdf9e", "primary-container": "#00e5ff",
+          "outline-variant": "#3b494c", "on-surface": "#e0e2eb",
+          "surface-bright": "#363940", "inverse-surface": "#e0e2eb",
+          "inverse-on-surface": "#2d3137", "surface-container": "#1c2026",
+          "on-primary-fixed": "#001f24", "on-secondary": "#3f2e00", "primary": "#c3f5ff",
+          "on-tertiary": "#3e2e00", "primary-fixed": "#9cf0ff",
+          "surface-container-highest": "#31353c", "on-secondary-container": "#6a4e00",
+          "surface-container-lowest": "#0b0e14", "primary-fixed-dim": "#00daf3",
+          "on-tertiary-container": "#6f5500", "on-primary-container": "#00626e",
+          "surface-container-low": "#181c22", "surface-tint": "#00daf3",
+          "tertiary-fixed": "#ffdf96", "on-secondary-fixed-variant": "#5b4300",
+          "on-error-container": "#ffdad6", "on-primary-fixed-variant": "#004f58",
+          "tertiary-container": "#fec931", "surface-variant": "#31353c"
+        },
+        fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Inter"] },
+        borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+      },
+    },
+  }
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #101419;
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: #e0e2eb;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Canvas ── */
+  #globe-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    display: block;
+  }
+
+  /* ── Navigation ── */
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: rgba(16, 20, 25, 0.35);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(132, 147, 150, 0.07);
+  }
+
+  #navbar .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.1875rem;
+    letter-spacing: 0.2em;
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s;
+    user-select: none;
+  }
+  #navbar .logo:hover { color: #c3f5ff; }
+
+  #navbar .nav-links {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #navbar .nav-links a {
+    color: #849396;
+    text-decoration: none;
+    transition: color 0.3s;
+    padding-bottom: 3px;
+  }
+  #navbar .nav-links a:hover { color: #c3f5ff; }
+  #navbar .nav-links a.active {
+    color: #c3f5ff;
+    border-bottom: 1px solid rgba(195, 245, 255, 0.5);
+  }
+
+  #navbar .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  #navbar .nav-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #849396;
+    transition: color 0.3s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+  }
+  #navbar .nav-actions button:hover { color: #c3f5ff; }
+
+  /* ── Hero Text Overlay ── */
+  #hero-overlay {
+    position: fixed;
+    top: 50%;
+    left: 3rem;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: none;
+    max-width: 480px;
+  }
+
+  #hero-overlay .eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.6875rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #00e5ff;
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+
+  #hero-overlay h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.75rem, 5.5vw, 4.75rem);
+    line-height: 1.0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 1.25rem;
+  }
+
+  #hero-overlay .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+    color: #849396;
+    margin: 0;
+  }
+
+  #hero-overlay .scroll-hint {
+    margin-top: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(59, 73, 76, 0.9);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.625rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  @keyframes pulse-arrow {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 0.8; transform: translateY(4px); }
+  }
+  .arrow-bounce { animation: pulse-arrow 2.2s ease-in-out infinite; }
+
+  .chevron-down {
+    width: 14px;
+    height: 14px;
+    border-right: 1.5px solid rgba(59, 73, 76, 0.9);
+    border-bottom: 1.5px solid rgba(59, 73, 76, 0.9);
+    transform: rotate(45deg) translateY(-2px);
+    display: inline-block;
+  }
+
+  /* ── Country Tooltip ── */
+  #country-tooltip {
+    position: fixed;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    transform: translate(18px, -50%);
+  }
+  #country-tooltip.visible { opacity: 1; }
+
+  #country-tooltip .tip-inner {
+    background: rgba(28, 32, 38, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 229, 255, 0.28);
+    border-radius: 0.125rem;
+    padding: 0.5rem 0.875rem 0.5625rem;
+    white-space: nowrap;
+  }
+
+  #country-tooltip .tip-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #00e5ff;
+    text-transform: uppercase;
+    display: block;
+    line-height: 1.3;
+  }
+  #country-tooltip .tip-region {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    color: #849396;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-top: 1px;
+  }
+
+  /* ── Selection Panel ── */
+  #selection-panel {
+    position: fixed;
+    bottom: 4.5rem;
+    left: 3rem;
+    z-index: 40;
+    width: 272px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  #selection-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  #selection-panel .sp-inner {
+    background: rgba(28, 32, 38, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(132, 147, 150, 0.15);
+    border-radius: 0.125rem;
+    padding: 1.25rem 1.375rem 1.375rem;
+  }
+
+  #selection-panel .sp-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.5625rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(59, 73, 76, 0.9);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  #selection-panel .sp-country {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 0.1875rem;
+    line-height: 1.1;
+  }
+
+  #selection-panel .sp-region {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: #849396;
+    margin: 0 0 1rem;
+    letter-spacing: 0.03em;
+  }
+
+  #selection-panel .sp-coords {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 0.875rem;
+    margin-bottom: 1.125rem;
+    border-top: 1px solid rgba(59, 73, 76, 0.3);
+  }
+
+  #selection-panel .coord-block { display: flex; flex-direction: column; gap: 3px; }
+
+  #selection-panel .ck {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.5625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(59, 73, 76, 0.9);
+  }
+  #selection-panel .cv {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8125rem;
+    color: #c3f5ff;
+    letter-spacing: 0.05em;
+  }
+
+  #selection-panel .exp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: #00e5ff;
+    color: #00363d;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.125rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.1s ease;
+    line-height: 1;
+  }
+  #selection-panel .exp-btn:hover { background: #c3f5ff; }
+  #selection-panel .exp-btn:active { transform: scale(0.98); }
+  #selection-panel .exp-btn .arrow-icon {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  /* ── HUD: outer border frame ── */
+  #hud-frame {
+    position: fixed;
+    inset: 1rem;
+    border: 1px solid rgba(132, 147, 150, 0.08);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* Corner tick marks */
+  #hud-frame::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 16px;
+    height: 16px;
+    border-top: 1px solid rgba(0, 229, 255, 0.25);
+    border-left: 1px solid rgba(0, 229, 255, 0.25);
+  }
+  #hud-frame::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 16px;
+    height: 16px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+    border-right: 1px solid rgba(0, 229, 255, 0.25);
+  }
+
+  /* ── HUD: Dot grid corners ── */
+  .dot-corner {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    width: 72px;
+    height: 72px;
+    background-image: radial-gradient(circle, rgba(132,147,150,0.25) 1px, transparent 1px);
+    background-size: 9px 9px;
+  }
+  .dot-corner.tl { top: 1.5rem;    left: 1.5rem;  }
+  .dot-corner.tr { top: 1.5rem;    right: 1.5rem; }
+  .dot-corner.bl { bottom: 1.5rem; left: 1.5rem;  }
+  .dot-corner.br { bottom: 1.5rem; right: 1.5rem; }
+
+  /* ── HUD: Bottom-left vertical text ── */
+  #hud-vert {
+    position: fixed;
+    bottom: 4.5rem;
+    left: 1.375rem;
+    z-index: 15;
+    pointer-events: none;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    color: rgba(59, 73, 76, 0.65);
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  /* ── HUD: Top-right coordinates ── */
+  #hud-coords {
+    position: fixed;
+    top: 5.25rem;
+    right: 1.75rem;
+    z-index: 15;
+    pointer-events: none;
+    text-align: right;
+  }
+  #hud-coords .hc-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(59, 73, 76, 0.75);
+    display: block;
+    margin-bottom: 3px;
+  }
+  #hud-coords .hc-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: rgba(132, 147, 150, 0.45);
+    display: block;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── HUD: Top-left stat ── */
+  #hud-stat {
+    position: fixed;
+    top: 5.25rem;
+    left: 1.75rem;
+    z-index: 15;
+    pointer-events: none;
+  }
+  #hud-stat .hs-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(59, 73, 76, 0.75);
+    display: block;
+    margin-bottom: 1px;
+  }
+  #hud-stat .hs-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(59, 73, 76, 0.5);
+    display: block;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+
+  /* ── Footer ── */
+  #footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    padding: 0.75rem 3rem;
+    background: rgba(16, 20, 25, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(132, 147, 150, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #footer .ft-copy {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    color: rgba(59, 73, 76, 0.8);
+    letter-spacing: 0.04em;
+  }
+  #footer .ft-links {
+    display: flex;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+  }
+  #footer .ft-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(59, 73, 76, 0.8);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  #footer .ft-links a:hover { color: #849396; }
+
+  /* ── Loading overlay ── */
+  #loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #101419;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    transition: opacity 0.6s ease;
+  }
+  #loading-screen.fade-out { opacity: 0; pointer-events: none; }
+
+  #loading-screen .ld-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.6875rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #00e5ff;
+  }
+  #loading-screen .ld-bar-wrap {
+    width: 160px;
+    height: 1px;
+    background: rgba(132, 147, 150, 0.15);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  #loading-screen .ld-bar {
+    height: 100%;
+    width: 0%;
+    background: #00e5ff;
+    transition: width 0.4s ease;
+  }
+</style>
+</head>
+<body>
+
+<!-- Data scripts -->
+<script src="js/data.js"></script>
+<script src="js/data-asia2a.js"></script>
+<script src="js/data-asia2b.js"></script>
+<script src="js/data-americas.js"></script>
+<script src="js/data-africa-oceania-me.js"></script>
+<script src="js/img-patch.js"></script>
+
+<!-- Loading screen -->
+<div id="loading-screen">
+  <span class="ld-title">Initializing Atlas</span>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ld-bar"></div></div>
+</div>
+
+<!-- Globe Canvas -->
+<canvas id="globe-canvas"></canvas>
+
+<!-- HUD Frame -->
+<div id="hud-frame"></div>
+
+<!-- Dot Grid Corners -->
+<div class="dot-corner tl"></div>
+<div class="dot-corner tr"></div>
+<div class="dot-corner bl"></div>
+<div class="dot-corner br"></div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <a href="index.html" class="logo">CELESTIAL</a>
+  <div class="nav-links">
+    <a href="#" class="active">Explore</a>
+    <a href="#" onclick="openDestinationsOverlay(); return false;">Destinations</a>
+    <a href="travelplanner.html">My Trips</a>
+  </div>
+  <div class="nav-actions">
+    <button id="btn-search" aria-label="Search" onclick="openSearchOverlay()">
+      <span class="material-symbols-outlined">search</span>
+    </button>
+    <button id="btn-login" aria-label="Account" onclick="openLoginModal()">
+      <span class="material-symbols-outlined">account_circle</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero Text Overlay -->
+<div id="hero-overlay">
+  <span class="eyebrow">Celestial Cartographer</span>
+  <h1>Explore<br>The World</h1>
+  <p class="subtitle">Select any country on the globe<br>to begin your expedition</p>
+  <div class="scroll-hint">
+    <span class="arrow-bounce"><span class="chevron-down"></span></span>
+    <span>Rotate &amp; Discover</span>
+  </div>
+</div>
+
+<!-- Country Tooltip -->
+<div id="country-tooltip">
+  <div class="tip-inner">
+    <span class="tip-name" id="tip-name">—</span>
+    <span class="tip-region" id="tip-region">—</span>
+  </div>
+</div>
+
+<!-- Selected Country Panel -->
+<div id="selection-panel">
+  <div class="sp-inner">
+    <span class="sp-label">Selected Destination</span>
+    <h2 class="sp-country" id="sp-country">—</h2>
+    <p class="sp-region" id="sp-region">—</p>
+    <div class="sp-coords">
+      <div class="coord-block">
+        <span class="ck">Latitude</span>
+        <span class="cv" id="sp-lat">—</span>
+      </div>
+      <div class="coord-block">
+        <span class="ck">Longitude</span>
+        <span class="cv" id="sp-lng">—</span>
+      </div>
+    </div>
+    <a id="exp-btn" href="#" class="exp-btn">
+      <span>Begin Expedition</span>
+      <span class="arrow-icon">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- HUD Top-left stat -->
+<div id="hud-stat">
+  <span class="hs-label">Destinations</span>
+  <span class="hs-val">100</span>
+</div>
+
+<!-- HUD Top-right rotation coords -->
+<div id="hud-coords">
+  <span class="hc-label">Globe Rotation</span>
+  <span class="hc-val" id="hc-lon">λ &nbsp;0.00°</span>
+  <span class="hc-val" id="hc-lat">φ &nbsp;0.00°</span>
+</div>
+
+<!-- HUD Bottom-left vertical label -->
+<div id="hud-vert">CELESTIAL_CARTOGRAPHER // GLOBAL_ATLAS</div>
+
+<!-- Footer -->
+<footer id="footer">
+  <span class="ft-copy">© 2024 Celestial Cartographer. Beyond the Horizon.</span>
+  <div class="ft-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Galactic Coordinates</a>
+    <a href="#">Contact Support</a>
+  </div>
+</footer>
+
+<!-- Three.js -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Country data ──────────────────────────────────────────────────────────
+  var COUNTRIES = [
+    {id:"italy",         name:"Italy",                region:"Europe",          lat:41.87,  lng:12.57},
+    {id:"france",        name:"France",               region:"Europe",          lat:46.23,  lng:2.21},
+    {id:"spain",         name:"Spain",                region:"Europe",          lat:40.46,  lng:-3.75},
+    {id:"greece",        name:"Greece",               region:"Europe",          lat:39.07,  lng:21.82},
+    {id:"germany",       name:"Germany",              region:"Europe",          lat:51.17,  lng:10.45},
+    {id:"united-kingdom",name:"United Kingdom",       region:"Europe",          lat:55.38,  lng:-3.44},
+    {id:"portugal",      name:"Portugal",             region:"Europe",          lat:39.40,  lng:-8.22},
+    {id:"switzerland",   name:"Switzerland",          region:"Europe",          lat:46.82,  lng:8.23},
+    {id:"austria",       name:"Austria",              region:"Europe",          lat:47.52,  lng:14.55},
+    {id:"netherlands",   name:"Netherlands",          region:"Europe",          lat:52.13,  lng:5.29},
+    {id:"czech-republic",name:"Czech Republic",       region:"Europe",          lat:49.82,  lng:15.47},
+    {id:"hungary",       name:"Hungary",              region:"Europe",          lat:47.16,  lng:19.50},
+    {id:"poland",        name:"Poland",               region:"Europe",          lat:51.92,  lng:19.15},
+    {id:"sweden",        name:"Sweden",               region:"Europe",          lat:60.13,  lng:18.64},
+    {id:"norway",        name:"Norway",               region:"Europe",          lat:60.47,  lng:8.47},
+    {id:"croatia",       name:"Croatia",              region:"Europe",          lat:45.10,  lng:15.20},
+    {id:"iceland",       name:"Iceland",              region:"Europe",          lat:64.96,  lng:-19.02},
+    {id:"ireland",       name:"Ireland",              region:"Europe",          lat:53.41,  lng:-8.24},
+    {id:"turkey",        name:"Turkey",               region:"Asia / Europe",   lat:38.96,  lng:35.24},
+    {id:"russia",        name:"Russia",               region:"Europe / Asia",   lat:61.52,  lng:105.32},
+    {id:"belgium",       name:"Belgium",              region:"Europe",          lat:50.50,  lng:4.47},
+    {id:"denmark",       name:"Denmark",              region:"Europe",          lat:56.26,  lng:9.50},
+    {id:"finland",       name:"Finland",              region:"Europe",          lat:61.92,  lng:25.75},
+    {id:"scotland",      name:"Scotland",             region:"Europe",          lat:56.49,  lng:-4.20},
+    {id:"georgia",       name:"Georgia",              region:"Asia",            lat:42.32,  lng:43.36},
+    {id:"japan",         name:"Japan",                region:"East Asia",       lat:36.20,  lng:138.25},
+    {id:"china",         name:"China",                region:"East Asia",       lat:35.86,  lng:104.20},
+    {id:"india",         name:"India",                region:"South Asia",      lat:20.59,  lng:78.96},
+    {id:"thailand",      name:"Thailand",             region:"Southeast Asia",  lat:15.87,  lng:100.99},
+    {id:"indonesia",     name:"Indonesia",            region:"Southeast Asia",  lat:-0.79,  lng:113.92},
+    {id:"vietnam",       name:"Vietnam",              region:"Southeast Asia",  lat:14.06,  lng:108.28},
+    {id:"cambodia",      name:"Cambodia",             region:"Southeast Asia",  lat:12.57,  lng:104.99},
+    {id:"nepal",         name:"Nepal",                region:"South Asia",      lat:28.39,  lng:84.12},
+    {id:"sri-lanka",     name:"Sri Lanka",            region:"South Asia",      lat:7.87,   lng:80.77},
+    {id:"philippines",   name:"Philippines",          region:"Southeast Asia",  lat:12.88,  lng:121.77},
+    {id:"malaysia",      name:"Malaysia",             region:"Southeast Asia",  lat:4.21,   lng:108.96},
+    {id:"south-korea",   name:"South Korea",          region:"East Asia",       lat:35.91,  lng:127.77},
+    {id:"bhutan",        name:"Bhutan",               region:"South Asia",      lat:27.51,  lng:90.43},
+    {id:"myanmar",       name:"Myanmar",              region:"Southeast Asia",  lat:21.92,  lng:95.96},
+    {id:"jordan",        name:"Jordan",               region:"Middle East",     lat:30.59,  lng:36.24},
+    {id:"uae",           name:"UAE",                  region:"Middle East",     lat:23.42,  lng:53.85},
+    {id:"israel",        name:"Israel",               region:"Middle East",     lat:31.05,  lng:34.85},
+    {id:"uzbekistan",    name:"Uzbekistan",           region:"Central Asia",    lat:41.38,  lng:64.59},
+    {id:"taiwan",        name:"Taiwan",               region:"East Asia",       lat:23.70,  lng:121.00},
+    {id:"maldives",      name:"Maldives",             region:"South Asia",      lat:3.20,   lng:73.22},
+    {id:"azerbaijan",    name:"Azerbaijan",           region:"Asia",            lat:40.14,  lng:47.58},
+    {id:"mongolia",      name:"Mongolia",             region:"East Asia",       lat:46.86,  lng:103.85},
+    {id:"laos",          name:"Laos",                 region:"Southeast Asia",  lat:19.86,  lng:102.50},
+    {id:"kazakhstan",    name:"Kazakhstan",           region:"Central Asia",    lat:48.02,  lng:66.92},
+    {id:"saudi-arabia",  name:"Saudi Arabia",         region:"Middle East",     lat:23.89,  lng:45.08},
+    {id:"usa",           name:"USA",                  region:"North America",   lat:37.09,  lng:-95.71},
+    {id:"canada",        name:"Canada",               region:"North America",   lat:56.13,  lng:-106.35},
+    {id:"mexico",        name:"Mexico",               region:"North America",   lat:23.63,  lng:-102.55},
+    {id:"brazil",        name:"Brazil",               region:"South America",   lat:-14.24, lng:-51.93},
+    {id:"argentina",     name:"Argentina",            region:"South America",   lat:-38.42, lng:-63.62},
+    {id:"peru",          name:"Peru",                 region:"South America",   lat:-9.19,  lng:-75.02},
+    {id:"colombia",      name:"Colombia",             region:"South America",   lat:4.57,   lng:-74.30},
+    {id:"chile",         name:"Chile",                region:"South America",   lat:-35.68, lng:-71.54},
+    {id:"cuba",          name:"Cuba",                 region:"Caribbean",       lat:21.52,  lng:-77.78},
+    {id:"costa-rica",    name:"Costa Rica",           region:"Central America", lat:9.75,   lng:-83.75},
+    {id:"guatemala",     name:"Guatemala",            region:"Central America", lat:15.78,  lng:-90.23},
+    {id:"bolivia",       name:"Bolivia",              region:"South America",   lat:-16.29, lng:-63.59},
+    {id:"ecuador",       name:"Ecuador",              region:"South America",   lat:-1.83,  lng:-78.18},
+    {id:"panama",        name:"Panama",               region:"Central America", lat:8.54,   lng:-80.78},
+    {id:"jamaica",       name:"Jamaica",              region:"Caribbean",       lat:18.11,  lng:-77.30},
+    {id:"dominican-republic",name:"Dominican Republic",region:"Caribbean",     lat:18.74,  lng:-70.16},
+    {id:"uruguay",       name:"Uruguay",              region:"South America",   lat:-32.52, lng:-55.77},
+    {id:"venezuela",     name:"Venezuela",            region:"South America",   lat:6.42,   lng:-66.59},
+    {id:"belize",        name:"Belize",               region:"Central America", lat:17.19,  lng:-88.50},
+    {id:"paraguay",      name:"Paraguay",             region:"South America",   lat:-23.44, lng:-58.44},
+    {id:"kenya",         name:"Kenya",                region:"East Africa",     lat:-0.02,  lng:37.91},
+    {id:"morocco",       name:"Morocco",              region:"North Africa",    lat:31.79,  lng:-7.09},
+    {id:"south-africa",  name:"South Africa",         region:"Southern Africa", lat:-30.56, lng:22.94},
+    {id:"tanzania",      name:"Tanzania",             region:"East Africa",     lat:-6.37,  lng:34.89},
+    {id:"egypt",         name:"Egypt",                region:"North Africa",    lat:26.82,  lng:30.80},
+    {id:"ethiopia",      name:"Ethiopia",             region:"East Africa",     lat:9.15,   lng:40.49},
+    {id:"ghana",         name:"Ghana",                region:"West Africa",     lat:7.95,   lng:-1.02},
+    {id:"rwanda",        name:"Rwanda",               region:"East Africa",     lat:-1.94,  lng:29.87},
+    {id:"mauritius",     name:"Mauritius",            region:"East Africa",     lat:-20.35, lng:57.55},
+    {id:"seychelles",    name:"Seychelles",           region:"East Africa",     lat:-4.68,  lng:55.49},
+    {id:"zambia",        name:"Zambia",               region:"Southern Africa", lat:-13.13, lng:27.85},
+    {id:"zimbabwe",      name:"Zimbabwe",             region:"Southern Africa", lat:-19.02, lng:29.15},
+    {id:"senegal",       name:"Senegal",              region:"West Africa",     lat:14.50,  lng:-14.45},
+    {id:"tunisia",       name:"Tunisia",              region:"North Africa",    lat:33.89,  lng:9.54},
+    {id:"madagascar",    name:"Madagascar",           region:"East Africa",     lat:-18.77, lng:46.87},
+    {id:"australia",     name:"Australia",            region:"Oceania",         lat:-25.27, lng:133.78},
+    {id:"new-zealand",   name:"New Zealand",          region:"Oceania",         lat:-40.90, lng:174.89},
+    {id:"fiji",          name:"Fiji",                 region:"Oceania",         lat:-17.71, lng:178.07},
+    {id:"papua-new-guinea",name:"Papua New Guinea",   region:"Oceania",         lat:-6.31,  lng:143.96},
+    {id:"tonga",         name:"Tonga",                region:"Oceania",         lat:-21.18, lng:-175.20},
+    {id:"samoa",         name:"Samoa",                region:"Oceania",         lat:-13.76, lng:-172.10},
+    {id:"vanuatu",       name:"Vanuatu",              region:"Oceania",         lat:-15.38, lng:166.96},
+    {id:"palau",         name:"Palau",                region:"Oceania",         lat:7.51,   lng:134.58},
+    {id:"cook-islands",  name:"Cook Islands",         region:"Oceania",         lat:-21.24, lng:-159.78},
+    {id:"solomon-islands",name:"Solomon Islands",     region:"Oceania",         lat:-9.65,  lng:160.16},
+    {id:"qatar",         name:"Qatar",                region:"Middle East",     lat:25.35,  lng:51.18},
+    {id:"kuwait",        name:"Kuwait",               region:"Middle East",     lat:29.31,  lng:47.48},
+    {id:"bahrain",       name:"Bahrain",              region:"Middle East",     lat:26.07,  lng:50.55},
+    {id:"oman",          name:"Oman",                 region:"Middle East",     lat:21.51,  lng:55.92},
+    {id:"lebanon",       name:"Lebanon",              region:"Middle East",     lat:33.85,  lng:35.86}
+  ];
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  var canvas      = document.getElementById('globe-canvas');
+  var tooltip     = document.getElementById('country-tooltip');
+  var tipName     = document.getElementById('tip-name');
+  var tipRegion   = document.getElementById('tip-region');
+  var selPanel    = document.getElementById('selection-panel');
+  var spCountry   = document.getElementById('sp-country');
+  var spRegion    = document.getElementById('sp-region');
+  var spLat       = document.getElementById('sp-lat');
+  var spLng       = document.getElementById('sp-lng');
+  var expBtn      = document.getElementById('exp-btn');
+  var hcLon       = document.getElementById('hc-lon');
+  var hcLat       = document.getElementById('hc-lat');
+  var ldBar       = document.getElementById('ld-bar');
+  var ldScreen    = document.getElementById('loading-screen');
+
+  // ── Renderer ──────────────────────────────────────────────────────────────
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  var scene  = new THREE.Scene();
+  scene.background = new THREE.Color(0x101419);
+
+  var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 15);
+
+  // ── Lighting ──────────────────────────────────────────────────────────────
+  scene.add(new THREE.AmbientLight(0x3a4455, 2.0));
+
+  var sun = new THREE.DirectionalLight(0xffffff, 2.4);
+  sun.position.set(5, 3, 5);
+  scene.add(sun);
+
+  var rimLight = new THREE.DirectionalLight(0x00e5ff, 0.35);
+  rimLight.position.set(-8, 1, -4);
+  scene.add(rimLight);
+
+  var fillLight = new THREE.DirectionalLight(0x1a2a3a, 0.8);
+  fillLight.position.set(0, -5, 3);
+  scene.add(fillLight);
+
+  // ── Stars ─────────────────────────────────────────────────────────────────
+  (function () {
+    var count  = 2000;
+    var pos    = new Float32Array(count * 3);
+    for (var i = 0; i < count; i++) {
+      var theta = Math.random() * Math.PI * 2;
+      var phi   = Math.acos(2 * Math.random() - 1);
+      var r     = 380 + Math.random() * 120;
+      var i3    = i * 3;
+      pos[i3]     = r * Math.sin(phi) * Math.cos(theta);
+      pos[i3 + 1] = r * Math.cos(phi);
+      pos[i3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    var mat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.55,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.82
+    });
+    scene.add(new THREE.Points(geo, mat));
+  })();
+
+  // ── Globe group ───────────────────────────────────────────────────────────
+  var RADIUS = 5;
+  var globeGroup = new THREE.Group();
+  scene.add(globeGroup);
+
+  // Earth mesh
+  var earthGeo = new THREE.SphereGeometry(RADIUS, 64, 64);
+  var earthMat = new THREE.MeshPhongMaterial({
+    color: 0x1e3a4a,
+    specular: 0x112233,
+    shininess: 12
+  });
+  var earth = new THREE.Mesh(earthGeo, earthMat);
+  globeGroup.add(earth);
+
+  // Texture loader with progress tracking
+  var texLoader  = new THREE.TextureLoader();
+  var texLoaded  = 0;
+  var texTotal   = 2;
+
+  function onTexLoad() {
+    texLoaded++;
+    ldBar.style.width = Math.round((texLoaded / texTotal) * 100) + '%';
+    if (texLoaded >= texTotal) {
+      setTimeout(function () {
+        ldScreen.classList.add('fade-out');
+        setTimeout(function () { ldScreen.style.display = 'none'; }, 700);
+      }, 300);
+    }
+  }
+
+  texLoader.load(
+    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+    function (t) { earthMat.map = t; earthMat.needsUpdate = true; onTexLoad(); },
+    undefined,
+    function () { onTexLoad(); }
+  );
+
+  texLoader.load(
+    'https://unpkg.com/three-globe/example/img/earth-topology.png',
+    function (t) { earthMat.bumpMap = t; earthMat.bumpScale = 0.05; earthMat.needsUpdate = true; onTexLoad(); },
+    undefined,
+    function () { onTexLoad(); }
+  );
+
+  // Optional specular map (water glint) — doesn't count toward loading
+  texLoader.load(
+    'https://unpkg.com/three-globe/example/img/earth-water.png',
+    function (t) { earthMat.specularMap = t; earthMat.specular = new THREE.Color(0x334455); earthMat.needsUpdate = true; },
+    undefined,
+    function () {}
+  );
+
+  // ── Atmosphere ────────────────────────────────────────────────────────────
+  // Inner cyan glow (BackSide, larger sphere, additive)
+  var atmGeo = new THREE.SphereGeometry(RADIUS * 1.075, 48, 48);
+  var atmMat = new THREE.MeshBasicMaterial({
+    color: 0x00e5ff,
+    transparent: true,
+    opacity: 0.04,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  scene.add(new THREE.Mesh(atmGeo, atmMat)); // not in globeGroup — static
+
+  // Outer softer halo
+  var haloGeo = new THREE.SphereGeometry(RADIUS * 1.16, 48, 48);
+  var haloMat = new THREE.MeshBasicMaterial({
+    color: 0x004466,
+    transparent: true,
+    opacity: 0.022,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  scene.add(new THREE.Mesh(haloGeo, haloMat));
+
+  // ── Lat/Lng → 3D position ─────────────────────────────────────────────────
+  function latLng3(lat, lng, r) {
+    var phi   = (90 - lat) * (Math.PI / 180);
+    var theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -r * Math.sin(phi) * Math.cos(theta),
+       r * Math.cos(phi),
+       r * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  // ── Country markers ───────────────────────────────────────────────────────
+  var markerGroup  = new THREE.Group();
+  globeGroup.add(markerGroup);
+
+  var hitMeshes = [];           // raycaster targets
+  var dotMeshes = {};           // id → dot mesh
+
+  var C_DEFAULT  = 0x00e5ff;
+  var C_HOVER    = 0xfabd00;
+  var C_SELECTED = 0xfec931;
+
+  COUNTRIES.forEach(function (c) {
+    var pos = latLng3(c.lat, c.lng, RADIUS + 0.042);
+
+    // Visible glowing dot
+    var dotGeo = new THREE.SphereGeometry(0.055, 10, 10);
+    var dotMat = new THREE.MeshBasicMaterial({ color: C_DEFAULT });
+    var dot    = new THREE.Mesh(dotGeo, dotMat);
+    dot.position.copy(pos);
+    dot.userData.country = c;
+    markerGroup.add(dot);
+    dotMeshes[c.id] = dot;
+
+    // Invisible hit sphere (larger pick target)
+    var hitGeo = new THREE.SphereGeometry(0.19, 8, 8);
+    var hitMat = new THREE.MeshBasicMaterial({ visible: false });
+    var hit    = new THREE.Mesh(hitGeo, hitMat);
+    hit.position.copy(pos);
+    hit.userData.country = c;
+    hit.userData.dot     = dot;
+    markerGroup.add(hit);
+    hitMeshes.push(hit);
+  });
+
+  // ── Interaction state ─────────────────────────────────────────────────────
+  var mouseNDC    = new THREE.Vector2(-9, -9);
+  var mousePx     = { x: 0, y: 0 };
+  var raycaster   = new THREE.Raycaster();
+
+  var hoveredId   = null;
+  var selectedId  = null;
+
+  var rotSpeed    = 0.0003;
+  var rotTarget   = 0.0003;
+  var isDragging  = false;
+  var prevDrag    = { x: 0, y: 0 };
+  var velX        = 0;
+  var velY        = 0;
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function setDotColor(id, hex) {
+    if (dotMeshes[id]) dotMeshes[id].material.color.setHex(hex);
+  }
+
+  function fmtCoord(v, pos, neg) {
+    return Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
+  }
+
+  function showTooltip(c, x, y) {
+    tipName.textContent   = c.name;
+    tipRegion.textContent = c.region;
+    tooltip.style.left    = x + 'px';
+    tooltip.style.top     = y + 'px';
+    tooltip.classList.add('visible');
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
+  }
+
+  function showPanel(c) {
+    spCountry.textContent = c.name;
+    spRegion.textContent  = c.region;
+    spLat.textContent     = fmtCoord(c.lat, 'N', 'S');
+    spLng.textContent     = fmtCoord(c.lng, 'E', 'W');
+    expBtn.href           = 'country.html?id=' + c.id;
+    selPanel.classList.add('visible');
+  }
+
+  function hidePanel() {
+    selPanel.classList.remove('visible');
+  }
+
+  // ── Mouse / touch events ──────────────────────────────────────────────────
+  window.addEventListener('mousemove', function (e) {
+    mousePx.x  = e.clientX;
+    mousePx.y  = e.clientY;
+    mouseNDC.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+    mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+    if (isDragging) {
+      velY += (e.clientX - prevDrag.x) * 0.006;
+      velX += (e.clientY - prevDrag.y) * 0.006;
+      prevDrag.x = e.clientX;
+      prevDrag.y = e.clientY;
+    }
+  });
+
+  window.addEventListener('mousedown', function (e) {
+    if (e.button === 0) {
+      isDragging = true;
+      prevDrag.x = e.clientX;
+      prevDrag.y = e.clientY;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
+  window.addEventListener('mouseup', function (e) {
+    if (e.button === 0) {
+      isDragging = false;
+      canvas.style.cursor = 'grab';
+    }
+  });
+
+  window.addEventListener('click', function () {
+    raycaster.setFromCamera(mouseNDC, camera);
+    var hits = raycaster.intersectObjects(hitMeshes);
+
+    if (hits.length > 0) {
+      var c = hits[0].object.userData.country;
+
+      // Reset previous selection marker
+      if (selectedId && selectedId !== c.id) {
+        setDotColor(selectedId, C_DEFAULT);
+      }
+      selectedId = c.id;
+      setDotColor(c.id, C_SELECTED);
+      showPanel(c);
+    } else {
+      if (selectedId) {
+        setDotColor(selectedId, C_DEFAULT);
+        selectedId = null;
+      }
+      hidePanel();
+    }
+  });
+
+  // Touch drag
+  var lastTouch = null;
+  window.addEventListener('touchstart', function (e) {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      lastTouch  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', function (e) {
+    if (isDragging && lastTouch && e.touches.length === 1) {
+      velY += (e.touches[0].clientX - lastTouch.x) * 0.006;
+      velX += (e.touches[0].clientY - lastTouch.y) * 0.006;
+      lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', function () {
+    isDragging = false;
+    lastTouch  = null;
+  }, { passive: true });
+
+  // ── Resize ────────────────────────────────────────────────────────────────
+  window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // ── Animation loop ────────────────────────────────────────────────────────
+  var frame = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    frame++;
+
+    // Hover raycast every 2nd frame
+    if (frame % 2 === 0 && !isDragging) {
+      raycaster.setFromCamera(mouseNDC, camera);
+      var hits = raycaster.intersectObjects(hitMeshes);
+
+      if (hits.length > 0) {
+        var c = hits[0].object.userData.country;
+        rotTarget = 0.0002;
+
+        if (hoveredId !== c.id) {
+          if (hoveredId && hoveredId !== selectedId) setDotColor(hoveredId, C_DEFAULT);
+          hoveredId = c.id;
+          if (hoveredId !== selectedId) setDotColor(hoveredId, C_HOVER);
+        }
+        canvas.style.cursor = 'pointer';
+        showTooltip(c, mousePx.x, mousePx.y);
+
+      } else {
+        if (hoveredId) {
+          if (hoveredId !== selectedId) setDotColor(hoveredId, C_DEFAULT);
+          hoveredId = null;
+        }
+        rotTarget = 0.0003;
+        if (!isDragging) canvas.style.cursor = 'grab';
+        hideTooltip();
+      }
+    }
+
+    // Smooth auto-rotation speed
+    rotSpeed += (rotTarget - rotSpeed) * 0.04;
+
+    // Drag inertia decay
+    if (!isDragging) { velX *= 0.91; velY *= 0.91; }
+
+    // Apply rotations
+    globeGroup.rotation.y += rotSpeed + velY;
+    globeGroup.rotation.x += velX;
+
+    // Clamp x tilt
+    globeGroup.rotation.x = Math.max(-1.1, Math.min(1.1, globeGroup.rotation.x));
+
+    // HUD readout (every 4 frames)
+    if (frame % 4 === 0) {
+      var lon = ((globeGroup.rotation.y * 180 / Math.PI) % 360).toFixed(2);
+      var lat = ((globeGroup.rotation.x * 180 / Math.PI) % 90 ).toFixed(2);
+      hcLon.textContent = '\u03bb \u00a0' + lon + '\u00b0';
+      hcLat.textContent = '\u03c6 \u00a0' + lat + '\u00b0';
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  canvas.style.cursor = 'grab';
+  animate();
+
+})();
+</script>
+
+<!-- ────────────────────── NEW OVERLAYS & UTILITIES ────────────────────── -->
+<style>
+/* ── Toast ── */
+#atlas-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(2rem);
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.875rem 2rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+#atlas-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Search Overlay ── */
+#search-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(16, 20, 25, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+#search-overlay.open { display: flex; }
+
+#search-box {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(28, 32, 38, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  padding: 2rem;
+}
+#search-input {
+  width: 100%;
+  background: rgba(16, 20, 25, 0.8);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+  color: #e0e2eb;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  padding: 1rem 1.25rem;
+  outline: none;
+}
+#search-input:focus { border-color: rgba(0, 229, 255, 0.5); }
+#search-results { margin-top: 1rem; max-height: 320px; overflow-y: auto; }
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(59, 73, 76, 0.15);
+  transition: background 0.15s;
+}
+.search-result-item:hover { background: rgba(0, 229, 255, 0.06); }
+.search-result-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #e0e2eb;
+}
+.search-result-region {
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+}
+.search-close {
+  float: right;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.search-close:hover { color: #c3f5ff; }
+
+/* ── Destinations Overlay ── */
+#destinations-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(16, 20, 25, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow-y: auto;
+  padding: 6rem 3rem 4rem;
+}
+#destinations-overlay.open { display: block; }
+.dest-overlay-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 2rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+  z-index: 201;
+  font-size: 1.5rem;
+}
+.dest-overlay-close:hover { color: #c3f5ff; }
+.dest-overlay-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #00e5ff;
+  margin-bottom: 3rem;
+}
+.dest-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.dest-card {
+  background: rgba(28, 32, 38, 0.9);
+  border: 1px solid rgba(59, 73, 76, 0.3);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-decoration: none;
+  display: block;
+}
+.dest-card:hover { border-color: rgba(0, 229, 255, 0.4); background: rgba(0, 229, 255, 0.04); }
+.dest-card-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e0e2eb;
+  margin-bottom: 0.25rem;
+}
+.dest-card-region {
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+}
+
+/* ── Login Modal ── */
+#login-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(16, 20, 25, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+}
+#login-modal.open { display: flex; }
+
+#login-box {
+  background: rgba(28, 32, 38, 0.98);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+.login-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.login-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  margin-bottom: 2rem;
+}
+.login-field {
+  width: 100%;
+  background: rgba(16, 20, 25, 0.8);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+  color: #e0e2eb;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  padding: 0.875rem 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+.login-field:focus { border-color: rgba(0, 229, 255, 0.5); }
+.login-btn-primary {
+  width: 100%;
+  background: #00e5ff;
+  color: #00363d;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn-primary:hover { filter: brightness(1.1); }
+.login-create-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.login-create-link:hover { color: #c3f5ff; }
+.login-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+}
+.login-close:hover { color: #c3f5ff; }
+#login-logged-in { display: none; text-align: center; padding: 1rem 0; }
+.login-user-email {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  color: #00e5ff;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.login-btn-signout {
+  background: none;
+  border: 1px solid rgba(132, 147, 150, 0.3);
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-btn-signout:hover { border-color: #c3f5ff; color: #c3f5ff; }
+</style>
+
+<script>
+// ── Toast Utility ─────────────────────────────────────────────────────────
+(function () {
+  var toast = document.createElement('div');
+  toast.id = 'atlas-toast';
+  document.body.appendChild(toast);
+})();
+
+window.showToast = function (msg, duration) {
+  var toast = document.getElementById('atlas-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function () {
+    toast.classList.remove('show');
+  }, duration || 3000);
+};
+
+// ── Search Overlay ────────────────────────────────────────────────────────
+(function () {
+  var overlay = document.createElement('div');
+  overlay.id = 'search-overlay';
+  overlay.innerHTML =
+    '<div id="search-box">' +
+      '<button class="search-close" onclick="closeSearchOverlay()" aria-label="Close search">' +
+        '<span class="material-symbols-outlined">close</span>' +
+      '</button>' +
+      '<input id="search-input" type="text" placeholder="SEARCH DESTINATIONS..." autocomplete="off" />' +
+      '<div id="search-results"></div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeSearchOverlay();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSearchOverlay();
+  });
+
+  document.getElementById('search-input').addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    var resultsEl = document.getElementById('search-results');
+    resultsEl.innerHTML = '';
+    if (!q) return;
+
+    var data = window.COUNTRIES_DATA;
+    if (!data) return;
+
+    var matches = Object.keys(data).filter(function (id) {
+      var c = data[id];
+      return c.name.toLowerCase().indexOf(q) !== -1 ||
+             (c.region && c.region.toLowerCase().indexOf(q) !== -1);
+    }).slice(0, 10);
+
+    if (matches.length === 0) {
+      resultsEl.innerHTML =
+        '<div class="search-result-item"><span class="search-result-region">No results found</span></div>';
+      return;
+    }
+
+    matches.forEach(function (id) {
+      var c = data[id];
+      var item = document.createElement('div');
+      item.className = 'search-result-item';
+      item.innerHTML =
+        '<span class="search-result-name">' + c.name + '</span>' +
+        '<span class="search-result-region">' + (c.region || '') + '</span>';
+      item.addEventListener('click', function () {
+        window.location.href = 'country.html?id=' + encodeURIComponent(id);
+      });
+      resultsEl.appendChild(item);
+    });
+  });
+})();
+
+window.openSearchOverlay = function () {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(function () {
+    document.getElementById('search-input').focus();
+  }, 50);
+};
+
+window.closeSearchOverlay = function () {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').innerHTML = '';
+};
+
+// ── Destinations Overlay ───────────────────────────────────────────────────
+(function () {
+  var overlay = document.createElement('div');
+  overlay.id = 'destinations-overlay';
+  overlay.innerHTML =
+    '<button class="dest-overlay-close" onclick="closeDestinationsOverlay()" aria-label="Close">' +
+      '<span class="material-symbols-outlined">close</span>' +
+    '</button>' +
+    '<p class="dest-overlay-title">All Destinations — Select a Country</p>' +
+    '<div class="dest-cards-grid" id="dest-cards-grid"></div>';
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeDestinationsOverlay();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeDestinationsOverlay();
+  });
+})();
+
+window.openDestinationsOverlay = function () {
+  var grid = document.getElementById('dest-cards-grid');
+  if (grid && !grid.dataset.populated) {
+    var data = window.COUNTRIES_DATA;
+    if (data) {
+      var html = '';
+      Object.keys(data).forEach(function (id) {
+        var c = data[id];
+        html +=
+          '<a class="dest-card" href="country.html?id=' + encodeURIComponent(id) + '">' +
+            '<div class="dest-card-name">' + c.name + '</div>' +
+            '<div class="dest-card-region">' + (c.region || '') + '</div>' +
+          '</a>';
+      });
+      grid.innerHTML = html;
+      grid.dataset.populated = '1';
+    }
+  }
+  document.getElementById('destinations-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeDestinationsOverlay = function () {
+  document.getElementById('destinations-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+// ── Login Modal ────────────────────────────────────────────────────────────
+(function () {
+  var modal = document.createElement('div');
+  modal.id = 'login-modal';
+  modal.innerHTML =
+    '<div id="login-box">' +
+      '<button class="login-close" onclick="closeLoginModal()" aria-label="Close"><span class="material-symbols-outlined">close</span></button>' +
+      '<p class="login-title">Atlas Horizon</p>' +
+      '<p class="login-subtitle">Sign in to your account</p>' +
+      '<div id="login-form-section">' +
+        '<input id="login-email" class="login-field" type="email" placeholder="Email address" autocomplete="email" />' +
+        '<input id="login-password" class="login-field" type="password" placeholder="Password" autocomplete="current-password" />' +
+        '<button class="login-btn-primary" onclick="doLogin()">Sign In</button>' +
+        '<span class="login-create-link" onclick="doCreateAccount()">Create Account</span>' +
+      '</div>' +
+      '<div id="login-logged-in">' +
+        '<span class="login-user-email" id="login-display-email"></span>' +
+        '<p style="color:#849396;font-size:0.75rem;letter-spacing:0.1em;margin-bottom:1.5rem;">You are signed in</p>' +
+        '<button class="login-btn-signout" onclick="doSignOut()">Sign Out</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeLoginModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLoginModal();
+  });
+
+  function refreshLoginState() {
+    var user = localStorage.getItem('atlas_user');
+    var btn = document.getElementById('btn-login');
+    if (btn) {
+      var icon = btn.querySelector('.material-symbols-outlined');
+      if (icon && user) {
+        icon.style.color = '#00e5ff';
+      }
+    }
+  }
+  refreshLoginState();
+  window._refreshLoginState = refreshLoginState;
+})();
+
+window.openLoginModal = function () {
+  var user = JSON.parse(localStorage.getItem('atlas_user') || 'null');
+  document.getElementById('login-form-section').style.display = user ? 'none' : '';
+  document.getElementById('login-logged-in').style.display = user ? 'block' : 'none';
+  if (user) {
+    document.getElementById('login-display-email').textContent = user.email;
+  }
+  document.getElementById('login-modal').classList.add('open');
+};
+
+window.closeLoginModal = function () {
+  document.getElementById('login-modal').classList.remove('open');
+};
+
+window.doLogin = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Welcome back, ' + email + '!');
+};
+
+window.doCreateAccount = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Account created! Welcome, ' + email + '.');
+};
+
+window.doSignOut = function () {
+  localStorage.removeItem('atlas_user');
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Signed out successfully.');
+};
+</script>
+
+</body>
+</html>

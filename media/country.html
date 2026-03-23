@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Loading... | Celestial Cartographer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-dim": "#101419",
+          "outline": "#849396",
+          "secondary-fixed-dim": "#fabd00",
+          "error-container": "#93000a",
+          "on-tertiary-fixed-variant": "#594400",
+          "on-error": "#690005",
+          "on-primary": "#00363d",
+          "secondary": "#ffdf9e",
+          "tertiary-fixed-dim": "#f3bf26",
+          "inverse-primary": "#006875",
+          "surface-container-high": "#262a31",
+          "surface": "#101419",
+          "on-background": "#e0e2eb",
+          "tertiary": "#ffeac0",
+          "on-tertiary-fixed": "#251a00",
+          "on-secondary-fixed": "#261a00",
+          "secondary-container": "#fabd00",
+          "error": "#ffb4ab",
+          "on-surface-variant": "#bac9cc",
+          "background": "#101419",
+          "secondary-fixed": "#ffdf9e",
+          "primary-container": "#00e5ff",
+          "outline-variant": "#3b494c",
+          "on-surface": "#e0e2eb",
+          "surface-bright": "#363940",
+          "inverse-surface": "#e0e2eb",
+          "inverse-on-surface": "#2d3137",
+          "surface-container": "#1c2026",
+          "on-primary-fixed": "#001f24",
+          "on-secondary": "#3f2e00",
+          "primary": "#c3f5ff",
+          "on-tertiary": "#3e2e00",
+          "primary-fixed": "#9cf0ff",
+          "surface-container-highest": "#31353c",
+          "on-secondary-container": "#6a4e00",
+          "surface-container-lowest": "#0b0e14",
+          "primary-fixed-dim": "#00daf3",
+          "on-tertiary-container": "#6f5500",
+          "on-primary-container": "#00626e",
+          "surface-container-low": "#181c22",
+          "surface-tint": "#00daf3",
+          "tertiary-fixed": "#ffdf96",
+          "on-secondary-fixed-variant": "#5b4300",
+          "on-error-container": "#ffdad6",
+          "on-primary-fixed-variant": "#004f58",
+          "tertiary-container": "#fec931",
+          "surface-variant": "#31353c"
+        },
+        fontFamily: {
+          "headline": ["Space Grotesk"],
+          "body": ["Inter"],
+          "label": ["Inter"]
+        },
+        borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .glass-card {
+    background: rgba(49, 53, 60, 0.4);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(132, 147, 150, 0.15);
+  }
+  .asymmetric-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 2rem;
+  }
+</style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-transparent dark:bg-transparent backdrop-blur-md">
+  <div class="text-2xl font-bold tracking-[0.2em] text-white dark:text-white hover:text-cyan-400 transition-colors font-headline">
+    <a href="index.html">CELESTIAL</a>
+  </div>
+  <div class="hidden md:flex gap-12 items-center font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm">
+    <a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="index.html">Explore</a>
+    <a class="text-cyan-400 border-b border-cyan-400 pb-1 hover:text-cyan-300 transition-all duration-300" href="#" onclick="openDestinationsOverlay(); return false;">Destinations</a>
+    <a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="travelplanner.html">My Trips</a>
+  </div>
+  <div class="flex items-center gap-6">
+    <div class="relative hidden lg:block">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+      <input class="bg-white/5 border-none text-xs tracking-widest px-10 py-2 focus:ring-1 focus:ring-cyan-400 w-64 rounded-none" placeholder="SEARCH COORDINATES" type="text"/>
+    </div>
+    <button id="btn-login" class="text-white hover:text-cyan-400 transition-colors active:scale-95 duration-200 ease-in-out" onclick="openLoginModal()">
+      <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+    </button>
+  </div>
+</nav>
+
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
+
+  <!-- Breadcrumb / Back Navigation -->
+  <div class="mb-12 flex items-center gap-4">
+    <a class="group flex items-center gap-2 text-xs font-label tracking-[0.2em] uppercase text-outline hover:text-primary transition-colors" href="index.html">
+      <span class="material-symbols-outlined text-sm">arrow_back</span>
+      Back to Globe
+    </a>
+    <span class="text-outline/30">/</span>
+    <span id="country-region" class="text-xs font-label tracking-[0.2em] uppercase text-primary"></span>
+  </div>
+
+  <!-- Cinematic Header -->
+  <header class="mb-20 relative">
+    <div class="absolute -left-20 -top-20 w-96 h-96 bg-primary-container/5 rounded-full blur-[120px]"></div>
+    <h1 id="country-name" class="font-headline text-6xl md:text-8xl lg:text-[10rem] font-bold tracking-[0.15em] uppercase text-on-surface leading-none opacity-90">
+    </h1>
+    <div class="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <p id="country-description" class="max-w-xl text-on-surface-variant font-body leading-relaxed text-lg">
+      </p>
+      <div class="flex gap-12 border-l border-outline-variant/20 pl-8">
+        <div>
+          <span class="block text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-1">Region</span>
+          <span id="country-region-meta" class="text-xl font-headline tracking-widest text-white"></span>
+        </div>
+        <div>
+          <span class="block text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-1">Coordinates</span>
+          <span id="country-coordinates" class="text-xl font-headline tracking-widest text-white"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Destination Cards - Asymmetric Layout -->
+  <section id="destinations-grid" class="asymmetric-grid">
+    <!-- Dynamically populated by JavaScript -->
+  </section>
+
+  <!-- Technical HUD Section -->
+  <section class="mt-32 border-t border-outline-variant/10 pt-16 grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div>
+      <span class="font-label text-[0.6875rem] tracking-[0.3em] uppercase text-primary block mb-6">Topography Scan</span>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+          <span>Terrain Variance</span>
+          <span id="hud-terrain" class="text-white"></span>
+        </div>
+        <div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+          <span>Climate Index</span>
+          <span id="hud-climate" class="text-white"></span>
+        </div>
+        <div class="flex justify-between items-center text-xs tracking-widest text-on-surface-variant border-b border-outline-variant/5 pb-2">
+          <span>Bio-Diversity</span>
+          <span id="hud-biodiversity" class="text-white"></span>
+        </div>
+      </div>
+    </div>
+    <div class="md:col-span-2">
+      <span class="font-label text-[0.6875rem] tracking-[0.3em] uppercase text-primary block mb-6">Regional Cartography</span>
+      <div class="w-full h-48 bg-surface-container-low relative overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, #3b494c 1px, transparent 0); background-size: 24px 24px;"></div>
+        <div class="text-[0.625rem] tracking-[0.5em] uppercase text-outline">Digital Surface Model Processing...</div>
+        <!-- Mock Map Graphic -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <svg class="w-full h-full opacity-10" viewBox="0 0 800 200">
+            <path d="M0,100 Q150,50 300,100 T600,100 T900,100" fill="none" stroke="#00e5ff" stroke-width="1"></path>
+            <path d="M0,120 Q200,80 400,120 T800,120" fill="none" stroke="#00e5ff" stroke-width="0.5"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- SideNavBar -->
+<aside class="fixed right-0 top-0 h-full z-40 flex flex-col p-8 bg-slate-900/40 dark:bg-[#181c22]/60 backdrop-blur-xl border-l border-white/10 shadow-[0_0_40px_rgba(0,229,255,0.06)] translate-x-full lg:translate-x-0 hidden lg:flex w-80">
+  <div class="mb-12">
+    <h3 class="text-lg font-bold text-white font-headline">Voyage Planner</h3>
+    <p class="text-slate-400 text-xs tracking-widest uppercase">Coordinates Saved</p>
+  </div>
+  <nav class="flex-1 font-['Inter'] text-sm tracking-wide">
+    <div class="space-y-2">
+      <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+        <span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+        Planner
+      </a>
+      <a class="text-cyan-400 font-bold flex items-center gap-4 py-3 border-r-2 border-cyan-400 hover:bg-white/5 transition-colors" href="#">
+        <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+        Favorites
+      </a>
+      <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+        <span class="material-symbols-outlined" data-icon="history">history</span>
+        Recent
+      </a>
+      <a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+        <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        Settings
+      </a>
+    </div>
+  </nav>
+  <a href="travelplanner.html">
+    <button class="mt-auto w-full py-4 bg-primary-container text-on-primary font-bold tracking-[0.2em] uppercase text-xs rounded-none active:scale-95 transition-all">
+      Book Expedition
+    </button>
+  </a>
+</aside>
+
+<!-- Footer -->
+<footer class="w-full py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-[#0b0e14] dark:bg-[#0b0e14]">
+  <div class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]">
+    © 2024 Celestial Cartographer. Beyond the Horizon.
+  </div>
+  <div class="flex flex-wrap justify-center gap-8">
+    <a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Privacy Policy</a>
+    <a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Terms of Service</a>
+    <a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Galactic Coordinates</a>
+    <a class="text-slate-500 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] hover:text-cyan-400 transition-colors" href="#">Contact Support</a>
+  </div>
+</footer>
+
+<!-- Data source -->
+<script src="js/data.js"></script>
+<script src="js/data-asia2a.js"></script>
+<script src="js/data-asia2b.js"></script>
+<script src="js/data-americas.js"></script>
+<script src="js/data-africa-oceania-me.js"></script>
+<script src="js/img-patch.js"></script>
+
+<script>
+(function () {
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function setText(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value || '';
+  }
+
+  // ─── Card builders ────────────────────────────────────────────────────────
+
+  function buildHeroCard(dest, countryId) {
+    var link = 'destination.html?country=' + encodeURIComponent(countryId) + '&id=' + encodeURIComponent(dest.id);
+    return (
+      '<article class="col-span-12 lg:col-span-8 group relative h-[600px] overflow-hidden">' +
+        '<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"' +
+          ' src="' + escHtml(dest.heroImage || '') + '"' +
+          ' alt="' + escHtml(dest.name) + '"' +
+        '/>' +
+        '<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>' +
+        '<div class="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 glass-card m-6">' +
+          '<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-4 block">' + escHtml(dest.location || '') + '</span>' +
+          '<h2 class="font-headline text-4xl font-bold tracking-wider text-white mb-4">' + escHtml(dest.name).toUpperCase() + '</h2>' +
+          '<p class="text-on-surface-variant mb-6 leading-relaxed">' + escHtml(dest.description || '') + '</p>' +
+          '<a href="' + escHtml(link) + '">' +
+            '<button class="px-8 py-3 bg-primary-container text-on-primary font-label text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all rounded-none">' +
+              'View Details' +
+            '</button>' +
+          '</a>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function buildSideCard(dest, countryId) {
+    var link = 'destination.html?country=' + encodeURIComponent(countryId) + '&id=' + encodeURIComponent(dest.id);
+    return (
+      '<article class="col-span-12 lg:col-span-4 group relative h-[600px] overflow-hidden">' +
+        '<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"' +
+          ' src="' + escHtml(dest.heroImage || '') + '"' +
+          ' alt="' + escHtml(dest.name) + '"' +
+        '/>' +
+        '<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>' +
+        '<div class="absolute bottom-8 left-8 right-8">' +
+          '<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">' + escHtml(dest.location || '') + '</span>' +
+          '<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-4">' + escHtml(dest.name).toUpperCase() + '</h2>' +
+          '<a href="' + escHtml(link) + '">' +
+            '<button class="group/btn flex items-center gap-4 text-[0.6875rem] font-label tracking-[0.2em] uppercase text-white">' +
+              '<span>View Details</span>' +
+              '<span class="material-symbols-outlined text-sm group-hover/btn:translate-x-2 transition-transform">arrow_forward</span>' +
+            '</button>' +
+          '</a>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function buildGridCard(dest, countryId, isLast) {
+    var link = 'destination.html?country=' + encodeURIComponent(countryId) + '&id=' + encodeURIComponent(dest.id);
+    // Last card in a set of 3 fills full width on md, otherwise splits 50/50
+    var colClass = isLast
+      ? 'col-span-12 md:col-span-12 lg:col-span-4'
+      : 'col-span-12 md:col-span-6 lg:col-span-4';
+    return (
+      '<article class="' + colClass + ' group relative h-[450px] overflow-hidden">' +
+        '<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"' +
+          ' src="' + escHtml(dest.heroImage || '') + '"' +
+          ' alt="' + escHtml(dest.name) + '"' +
+        '/>' +
+        '<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>' +
+        '<div class="absolute bottom-8 left-8 right-8">' +
+          '<span class="text-[0.6875rem] font-label tracking-[0.2em] uppercase text-primary mb-2 block">' + escHtml(dest.location || '') + '</span>' +
+          '<h2 class="font-headline text-2xl font-bold tracking-wider text-white mb-2">' + escHtml(dest.name).toUpperCase() + '</h2>' +
+          '<p class="text-on-surface-variant text-sm line-clamp-2 mb-4">' + escHtml(dest.description || '') + '</p>' +
+          '<a href="' + escHtml(link) + '">' +
+            '<button class="w-full py-3 border border-primary/20 hover:border-primary transition-colors font-label text-[0.625rem] tracking-[0.2em] uppercase text-white">' +
+              'View Expedition' +
+            '</button>' +
+          '</a>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function buildDestinationCards(destinations, countryId) {
+    if (!destinations || destinations.length === 0) return '';
+
+    var html = '';
+
+    // Card 1: Hero (col-span-8)
+    if (destinations[0]) {
+      html += buildHeroCard(destinations[0], countryId);
+    }
+
+    // Card 2: Side (col-span-4)
+    if (destinations[1]) {
+      html += buildSideCard(destinations[1], countryId);
+    }
+
+    // Cards 3+: Grid cards (col-span-4 each)
+    var gridDests = destinations.slice(2);
+    for (var i = 0; i < gridDests.length; i++) {
+      // The last card in a group of 3 gets md:col-span-12 if it would be alone
+      // Mirror italy.html: item at index 2 in a set of 3 gets col-span-12 on md
+      var posInGroup = i % 3; // 0, 1, 2
+      var groupSize = Math.min(3, gridDests.length - Math.floor(i / 3) * 3);
+      var isThirdInGroup = (posInGroup === 2) && (groupSize === 3);
+      html += buildGridCard(gridDests[i], countryId, isThirdInGroup);
+    }
+
+    return html;
+  }
+
+  // ─── Error state ──────────────────────────────────────────────────────────
+
+  function showErrorState(countryId) {
+    document.title = 'Country Not Found | Celestial Cartographer';
+
+    var nameEl = document.getElementById('country-name');
+    if (nameEl) nameEl.textContent = countryId ? countryId.toUpperCase() : 'UNKNOWN';
+
+    setText('country-region', 'Unknown Region');
+    setText('country-region-meta', 'UNKNOWN');
+    setText('country-coordinates', 'N/A');
+
+    var descEl = document.getElementById('country-description');
+    if (descEl) {
+      descEl.textContent = 'No data available for this destination. Please return to the globe and select a valid country.';
+    }
+
+    var grid = document.getElementById('destinations-grid');
+    if (grid) {
+      grid.innerHTML =
+        '<div class="col-span-12 flex flex-col items-center justify-center py-24 gap-6">' +
+          '<span class="material-symbols-outlined text-6xl text-outline">explore_off</span>' +
+          '<p class="text-on-surface-variant text-sm tracking-[0.2em] uppercase">No destinations found for this country</p>' +
+          '<a href="index.html" class="px-8 py-3 bg-primary-container text-on-primary font-label text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all rounded-none">Return to Globe</a>' +
+        '</div>';
+    }
+
+    setText('hud-terrain', 'N/A');
+    setText('hud-climate', 'N/A');
+    setText('hud-biodiversity', 'N/A');
+  }
+
+  // ─── Main render ──────────────────────────────────────────────────────────
+
+  function render() {
+    var params = new URLSearchParams(window.location.search);
+    var countryId = params.get('id');
+
+    if (!countryId) {
+      showErrorState(null);
+      return;
+    }
+
+    var data = window.COUNTRIES_DATA;
+    var country = data && data[countryId];
+
+    if (!country) {
+      showErrorState(countryId);
+      return;
+    }
+
+    // Page title
+    document.title = country.name + ' | Celestial Cartographer';
+
+    // Breadcrumb region
+    setText('country-region', country.region || '');
+
+    // Cinematic header
+    setText('country-name', country.name ? country.name.toUpperCase() : '');
+    setText('country-description', country.description || '');
+    setText('country-region-meta', country.region ? country.region.toUpperCase() : '');
+    setText('country-coordinates', country.coordinates || '');
+
+    // Destination cards
+    var grid = document.getElementById('destinations-grid');
+    if (grid) {
+      var destinations = country.destinations || [];
+      grid.innerHTML = buildDestinationCards(destinations, countryId);
+    }
+
+    // HUD section
+    var hud = country.hud || {};
+    setText('hud-terrain', hud.terrain || country.terrain || 'N/A');
+    setText('hud-climate', hud.climate || country.climate || 'N/A');
+    setText('hud-biodiversity', hud.biodiversity || country.biodiversity || 'N/A');
+  }
+
+  // Run after DOM is ready; also guard against data.js not yet loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', render);
+  } else {
+    render();
+  }
+})();
+</script>
+
+<!-- ────────────────────── NEW UTILITIES ────────────────────── -->
+<style>
+/* ── Toast ── */
+#atlas-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(2rem);
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.875rem 2rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+#atlas-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Destinations Overlay ── */
+#destinations-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(16, 20, 25, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow-y: auto;
+  padding: 6rem 3rem 4rem;
+}
+#destinations-overlay.open { display: block; }
+.dest-overlay-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 2rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+  z-index: 201;
+  font-size: 1.5rem;
+}
+.dest-overlay-close:hover { color: #c3f5ff; }
+.dest-overlay-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #00e5ff;
+  margin-bottom: 3rem;
+}
+.dest-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.dest-card {
+  background: rgba(28, 32, 38, 0.9);
+  border: 1px solid rgba(59, 73, 76, 0.3);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-decoration: none;
+  display: block;
+}
+.dest-card:hover { border-color: rgba(0, 229, 255, 0.4); background: rgba(0, 229, 255, 0.04); }
+.dest-card-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e0e2eb;
+  margin-bottom: 0.25rem;
+}
+.dest-card-region {
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+}
+
+/* ── Login Modal ── */
+#login-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(16, 20, 25, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+}
+#login-modal.open { display: flex; }
+
+#login-box {
+  background: rgba(28, 32, 38, 0.98);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+.login-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.login-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  margin-bottom: 2rem;
+}
+.login-field {
+  width: 100%;
+  background: rgba(16, 20, 25, 0.8);
+  border: 1px solid rgba(132, 147, 150, 0.2);
+  color: #e0e2eb;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  padding: 0.875rem 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+.login-field:focus { border-color: rgba(0, 229, 255, 0.5); }
+.login-btn-primary {
+  width: 100%;
+  background: #00e5ff;
+  color: #00363d;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn-primary:hover { filter: brightness(1.1); }
+.login-create-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #849396;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.login-create-link:hover { color: #c3f5ff; }
+.login-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #849396;
+  cursor: pointer;
+}
+.login-close:hover { color: #c3f5ff; }
+#login-logged-in { display: none; text-align: center; padding: 1rem 0; }
+.login-user-email {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  color: #00e5ff;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.login-btn-signout {
+  background: none;
+  border: 1px solid rgba(132, 147, 150, 0.3);
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-btn-signout:hover { border-color: #c3f5ff; color: #c3f5ff; }
+</style>
+
+<script>
+// ── Toast Utility ─────────────────────────────────────────────────────────
+(function () {
+  var toast = document.createElement('div');
+  toast.id = 'atlas-toast';
+  document.body.appendChild(toast);
+})();
+
+window.showToast = function (msg, duration) {
+  var toast = document.getElementById('atlas-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function () {
+    toast.classList.remove('show');
+  }, duration || 3000);
+};
+
+// ── Destinations Overlay ───────────────────────────────────────────────────
+(function () {
+  var overlay = document.createElement('div');
+  overlay.id = 'destinations-overlay';
+  overlay.innerHTML =
+    '<button class="dest-overlay-close" onclick="closeDestinationsOverlay()" aria-label="Close">' +
+      '<span class="material-symbols-outlined">close</span>' +
+    '</button>' +
+    '<p class="dest-overlay-title">All Destinations — Select a Country</p>' +
+    '<div class="dest-cards-grid" id="dest-cards-grid"></div>';
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeDestinationsOverlay();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeDestinationsOverlay();
+  });
+})();
+
+window.openDestinationsOverlay = function () {
+  var grid = document.getElementById('dest-cards-grid');
+  if (grid && !grid.dataset.populated) {
+    var data = window.COUNTRIES_DATA;
+    if (data) {
+      var html = '';
+      Object.keys(data).forEach(function (id) {
+        var c = data[id];
+        html +=
+          '<a class="dest-card" href="country.html?id=' + encodeURIComponent(id) + '">' +
+            '<div class="dest-card-name">' + c.name + '</div>' +
+            '<div class="dest-card-region">' + (c.region || '') + '</div>' +
+          '</a>';
+      });
+      grid.innerHTML = html;
+      grid.dataset.populated = '1';
+    }
+  }
+  document.getElementById('destinations-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeDestinationsOverlay = function () {
+  document.getElementById('destinations-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+// ── Login Modal ────────────────────────────────────────────────────────────
+(function () {
+  var modal = document.createElement('div');
+  modal.id = 'login-modal';
+  modal.innerHTML =
+    '<div id="login-box">' +
+      '<button class="login-close" onclick="closeLoginModal()" aria-label="Close"><span class="material-symbols-outlined">close</span></button>' +
+      '<p class="login-title">Atlas Horizon</p>' +
+      '<p class="login-subtitle">Sign in to your account</p>' +
+      '<div id="login-form-section">' +
+        '<input id="login-email" class="login-field" type="email" placeholder="Email address" autocomplete="email" />' +
+        '<input id="login-password" class="login-field" type="password" placeholder="Password" autocomplete="current-password" />' +
+        '<button class="login-btn-primary" onclick="doLogin()">Sign In</button>' +
+        '<span class="login-create-link" onclick="doCreateAccount()">Create Account</span>' +
+      '</div>' +
+      '<div id="login-logged-in">' +
+        '<span class="login-user-email" id="login-display-email"></span>' +
+        '<p style="color:#849396;font-size:0.75rem;letter-spacing:0.1em;margin-bottom:1.5rem;">You are signed in</p>' +
+        '<button class="login-btn-signout" onclick="doSignOut()">Sign Out</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeLoginModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLoginModal();
+  });
+
+  function refreshLoginState() {
+    var user = localStorage.getItem('atlas_user');
+    var btn = document.getElementById('btn-login');
+    if (btn) {
+      var icon = btn.querySelector('.material-symbols-outlined');
+      if (icon && user) {
+        icon.style.color = '#00e5ff';
+      }
+    }
+  }
+  refreshLoginState();
+  window._refreshLoginState = refreshLoginState;
+})();
+
+window.openLoginModal = function () {
+  var user = JSON.parse(localStorage.getItem('atlas_user') || 'null');
+  document.getElementById('login-form-section').style.display = user ? 'none' : '';
+  document.getElementById('login-logged-in').style.display = user ? 'block' : 'none';
+  if (user) {
+    document.getElementById('login-display-email').textContent = user.email;
+  }
+  document.getElementById('login-modal').classList.add('open');
+};
+
+window.closeLoginModal = function () {
+  document.getElementById('login-modal').classList.remove('open');
+};
+
+window.doLogin = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Welcome back, ' + email + '!');
+};
+
+window.doCreateAccount = function () {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-password').value;
+  if (!email || !pass) { alert('Please enter email and password.'); return; }
+  localStorage.setItem('atlas_user', JSON.stringify({ email: email }));
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Account created! Welcome, ' + email + '.');
+};
+
+window.doSignOut = function () {
+  localStorage.removeItem('atlas_user');
+  closeLoginModal();
+  if (window._refreshLoginState) window._refreshLoginState();
+  showToast('Signed out successfully.');
+};
+</script>
+
+</body>
+</html>

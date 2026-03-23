@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#101419",
+                        "outline": "#849396",
+                        "secondary-fixed-dim": "#fabd00",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-error": "#690005",
+                        "on-primary": "#00363d",
+                        "secondary": "#ffdf9e",
+                        "tertiary-fixed-dim": "#f3bf26",
+                        "inverse-primary": "#006875",
+                        "surface-container-high": "#262a31",
+                        "surface": "#101419",
+                        "on-background": "#e0e2eb",
+                        "tertiary": "#ffeac0",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-secondary-fixed": "#261a00",
+                        "secondary-container": "#fabd00",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#bac9cc",
+                        "background": "#101419",
+                        "secondary-fixed": "#ffdf9e",
+                        "primary-container": "#00e5ff",
+                        "outline-variant": "#3b494c",
+                        "on-surface": "#e0e2eb",
+                        "surface-bright": "#363940",
+                        "inverse-surface": "#e0e2eb",
+                        "inverse-on-surface": "#2d3137",
+                        "surface-container": "#1c2026",
+                        "on-primary-fixed": "#001f24",
+                        "on-secondary": "#3f2e00",
+                        "primary": "#c3f5ff",
+                        "on-tertiary": "#3e2e00",
+                        "primary-fixed": "#9cf0ff",
+                        "surface-container-highest": "#31353c",
+                        "on-secondary-container": "#6a4e00",
+                        "surface-container-lowest": "#0b0e14",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-tertiary-container": "#6f5500",
+                        "on-primary-container": "#00626e",
+                        "surface-container-low": "#181c22",
+                        "surface-tint": "#00daf3",
+                        "tertiary-fixed": "#ffdf96",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004f58",
+                        "tertiary-container": "#fec931",
+                        "surface-variant": "#31353c"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(49, 53, 60, 0.4);
+            backdrop-filter: blur(16px);
+        }
+        .hero-gradient {
+            background: linear-gradient(to bottom, transparent 0%, #101419 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-transparent dark:bg-transparent backdrop-blur-md">
+<div class="text-2xl font-bold tracking-[0.2em] text-white dark:text-white hover:text-cyan-400 transition-colors font-headline">
+            CELESTIAL
+        </div>
+<div class="hidden md:flex items-center gap-12 font-['Space_Grotesk'] tracking-[0.1em] uppercase text-sm">
+<a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="#">Explore</a>
+<a class="text-cyan-400 border-b border-cyan-400 pb-1 hover:text-cyan-300 transition-all duration-300" href="#">Destinations</a>
+<a class="text-slate-400 hover:text-white transition-colors hover:text-cyan-300 transition-all duration-300" href="#">My Trips</a>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-cyan-400 cursor-pointer hover:scale-95 duration-200 ease-in-out">account_circle</span>
+</div>
+</nav>
+<!-- SideNavBar (Voyage Planner) - Persistent Drawer Style -->
+<aside class="fixed right-0 top-0 h-full z-40 flex flex-col p-8 bg-slate-900/40 dark:bg-[#181c22]/60 backdrop-blur-xl border-l border-white/10 w-80 shadow-[0_0_40px_rgba(0,229,255,0.06)] font-['Inter'] text-sm tracking-wide">
+<div class="mb-12">
+<h2 class="text-lg font-bold text-white">Voyage Planner</h2>
+<p class="text-slate-500 text-xs uppercase tracking-widest mt-1">Coordinates Saved</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="text-cyan-400 font-bold flex items-center gap-4 py-3 border-r-2 border-cyan-400 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">event_note</span>
+                Planner
+            </a>
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">star</span>
+                Favorites
+            </a>
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+                Recent
+            </a>
+<a class="text-slate-400 flex items-center gap-4 py-3 hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto pt-8 border-t border-white/5">
+<button class="w-full bg-primary-container text-on-primary-container py-4 font-bold tracking-widest uppercase text-xs hover:brightness-110 transition-all">
+                Book Expedition
+            </button>
+</div>
+</aside>
+<main class="relative mr-80">
+<!-- Hero Section -->
+<section class="relative h-screen w-full overflow-hidden">
+<img alt="The Colosseum in Rome during sunset" class="absolute inset-0 w-full h-full object-cover" data-alt="Cinematic wide shot of the Colosseum at golden hour" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-2QhV-7yoEevmfrEJEWOj0HhF4z_gxu8BqbSC6SUrQxJr-Z0iobFpi2PQi_5W1gTmqQ32QE35QtOmJSDyD7eiOF22AYO4nBpOjMLbVpgXY-cdx9sGxdGPlMCksGYmtxnFKw7iKhhx9opV2_uMXRgd5nhYhjxBGZhuR5EmV25jQTQH6O0ZTD-J5Pfo6JxxE1mPkS0B6-gGgVFN6v5JBGAJjh8Ip9TILwXivG4txewvPjnnsysNFeapRWvC_zCApnPnMjo1CsSiI0tj"/>
+<div class="absolute inset-0 hero-gradient"></div>
+<div class="absolute bottom-24 left-12 max-w-4xl">
+<div class="flex items-center gap-4 mb-4">
+<span class="text-secondary font-label text-[0.6875rem] uppercase tracking-[0.2em] px-3 py-1 border border-secondary/20">Historic Landmark</span>
+<span class="text-primary font-label text-[0.6875rem] uppercase tracking-[0.2em]">41.8902° N, 12.4922° E</span>
+</div>
+<h1 class="text-white font-headline text-[5rem] leading-[0.9] tracking-[0.1em] uppercase mb-6">Colosseum</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed font-light">
+                    An architectural marvel of the Flavian dynasty, standing as the eternal symbol of Rome's grandeur and the epic theater of gladiatorial combat.
+                </p>
+</div>
+</section>
+<!-- Content Grid (Asymmetric) -->
+<section class="px-12 py-24 grid grid-cols-12 gap-16 bg-background">
+<!-- Left Column: Details -->
+<div class="col-span-12 lg:col-span-7 space-y-16">
+<div>
+<h3 class="text-primary font-headline text-2xl tracking-widest uppercase mb-8">The Legacy</h3>
+<div class="space-y-6 text-on-surface-variant leading-loose">
+<p>Completed in 80 AD, the Flavian Amphitheatre remains the largest ancient amphitheatre ever built. It was a masterpiece of Roman engineering, capable of holding between 50,000 and 80,000 spectators who gathered to witness public spectacles, re-enactments of famous battles, and the legendary games.</p>
+<p>Today, it stands as a testament to the sophistication of Roman urban planning, featuring complex systems of vaulted ceilings and the subterranean "Hypogeum"—a labyrinth of tunnels used to house animals and gladiators before they were hoisted into the arena.</p>
+</div>
+</div>
+<!-- Technical Data HUD -->
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 p-8 border border-outline-variant/15 bg-surface-container-low">
+<div>
+<p class="text-slate-500 font-label text-[0.6rem] uppercase tracking-widest mb-2">Built By</p>
+<p class="text-white font-medium uppercase tracking-tighter">Vespasian &amp; Titus</p>
+</div>
+<div>
+<p class="text-slate-500 font-label text-[0.6rem] uppercase tracking-widest mb-2">Material</p>
+<p class="text-white font-medium uppercase tracking-tighter">Travertine &amp; Tuff</p>
+</div>
+<div>
+<p class="text-slate-500 font-label text-[0.6rem] uppercase tracking-widest mb-2">Capacity</p>
+<p class="text-white font-medium uppercase tracking-tighter">80,000 Souls</p>
+</div>
+</div>
+<!-- Gallery -->
+<div class="grid grid-cols-2 gap-4">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" data-alt="Detail of the Colosseum arches at night" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3vynDYFKTOG66pvH7sOUYjZwHMBOqgA34c6UT5u9W2jno0NsABN7lVWhuexTfe4MsxmLZoKwg46AVLOUQndNOgZiMAl77l1_2pNn32vDaf6dg3B5DZipmUdIxT8nqqtJGr98xU30RecnCu2ukWKPzmQUTubkgHyYLXKvtXcZql2zz1SRb5aly5rlCv7_mmwPkNOZsx3LuION2bUBmvoupq1CXPgKonpALGT8B10ya2oBnWEbe2a5i-2Ev3ymcmMSg3z8lizsI0x_b"/>
+</div>
+<div class="aspect-[4/5] overflow-hidden translate-y-12">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" data-alt="Internal view of the Colosseum hypogeum" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_8Y6J2muN7zkQduz-1F5VSekH7Enl2TuxLWguGAKfMs50nEWjIuxh7JUMTvD7rDDgYNuU8rUCLI_WqrzEsvN29wXSs03ZofWJMnb1_rELFfOnx3_qTDrcd_wBDKChKQv7_li9y2Rx9vNNYjvkxP54tXLTy-OCRjcpQU61Z_hd-NIg08SjXAqYpB8kqGn4jH6SGClTzjkWC9gSNtP9O4s8JgGycqWjjVHwZBQ1RBQFvpWaQ3zAfNU0C_Jq06tBv7Pbo9iUxq-foO2S"/>
+</div>
+</div>
+</div>
+<!-- Right Column: Booking & Logistics -->
+<div class="col-span-12 lg:col-span-5">
+<div class="sticky top-32 space-y-8">
+<div class="glass-panel p-10 border border-white/5">
+<h4 class="text-white font-headline text-xl tracking-widest uppercase mb-6">Plan Your Visit</h4>
+<div class="space-y-6 mb-10">
+<div class="flex justify-between items-center py-4 border-b border-outline-variant/10">
+<span class="text-slate-400 font-label text-xs uppercase tracking-widest">Opening Hours</span>
+<span class="text-white text-sm">08:30 — 19:15</span>
+</div>
+<div class="flex justify-between items-center py-4 border-b border-outline-variant/10">
+<span class="text-slate-400 font-label text-xs uppercase tracking-widest">Base Rate</span>
+<span class="text-secondary text-sm">€16.00</span>
+</div>
+<div class="flex justify-between items-center py-4">
+<span class="text-slate-400 font-label text-xs uppercase tracking-widest">Status</span>
+<span class="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    Open Today
+                                </span>
+</div>
+</div>
+<div class="space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container py-5 text-sm font-bold tracking-[0.2em] uppercase hover:brightness-110 transition-all flex justify-center items-center gap-3">
+<span class="material-symbols-outlined text-lg">calendar_add_on</span>
+                                Add to Trip Planner
+                            </button>
+<button class="w-full border border-primary/30 text-primary py-5 text-sm font-bold tracking-[0.2em] uppercase hover:bg-primary/5 transition-all">
+                                Reserve Expedition
+                            </button>
+</div>
+</div>
+<div class="p-8 bg-surface-container-lowest border border-outline-variant/10 flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary">info</span>
+<div>
+<p class="text-white text-xs font-bold uppercase tracking-widest mb-1">Explorer Note</p>
+<p class="text-slate-500 text-xs leading-relaxed">Early morning access is recommended for the best lighting and minimal crowds. Secure your entry at least 14 cycles in advance.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-[#0b0e14]">
+<div class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em] text-slate-500">
+            © 2024 Celestial Cartographer. Beyond the Horizon.
+        </div>
+<div class="flex flex-wrap justify-center gap-8 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.15em]">
+<a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Galactic Coordinates</a>
+<a class="text-slate-500 hover:text-cyan-400 transition-colors" href="#">Contact Support</a>
+</div>
+</footer>
+<!-- HUD Overlay for atmosphere -->
+<div class="fixed inset-0 pointer-events-none border-[1px] border-outline/10 z-30 m-4"></div>
+<div class="fixed bottom-12 left-12 z-50 pointer-events-none">
+<div class="text-[0.6rem] font-label text-primary/40 uppercase tracking-[0.5em] [writing-mode:vertical-lr]">
+            DEPT_CULTURAL_ARCHIVE // ROM_772
+        </div>
+</div>
+</body></html>
